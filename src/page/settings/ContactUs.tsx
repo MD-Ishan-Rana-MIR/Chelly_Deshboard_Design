@@ -9,6 +9,13 @@ type ContactType = {
     address: string;
 };
 
+type SocialType = {
+    tiktok: string;
+    instagram: string;
+    twitter: string;
+    youtube: string;
+};
+
 export default function ContactInformation() {
     const [contact, setContact] = useState<ContactType>({
         email: 'admin@gmail.com',
@@ -16,18 +23,41 @@ export default function ContactInformation() {
         address: 'Dhaka, Bangladesh',
     });
 
-    // HANDLE INPUT
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const [social, setSocial] = useState<SocialType>({
+        tiktok: '',
+        instagram: '',
+        twitter: '',
+        youtube: '',
+    });
+
+    // CONTACT CHANGE
+    const handleContactChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
         setContact({
             ...contact,
             [e.target.name]: e.target.value,
         });
     };
 
-    // SAVE
+    // SOCIAL CHANGE
+    const handleSocialChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        setSocial({
+            ...social,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    // SAVE ALL
     const handleSave = () => {
-        console.log(contact);
-        alert('Contact information updated successfully!');
+        console.log({
+            contact,
+            social,
+        });
+
+        alert('Information updated successfully!');
     };
 
     return (
@@ -39,68 +69,139 @@ export default function ContactInformation() {
                     Contact Information
                 </h1>
                 <p className="text-gray-500 text-sm mt-1">
-                    Update your email, phone number and address
+                    Update contact details and social media links
                 </p>
             </div>
 
-            {/* CARD */}
-            <div className="bg-white rounded-3xl shadow-lg p-6 md:p-10 space-y-6">
+            {/* MAIN CARD */}
+            <div className="bg-white rounded-3xl shadow-lg p-6 md:p-10 space-y-10">
 
-                {/* EMAIL */}
-                <div>
-                    <label className="text-sm text-gray-600 mb-2 block">
-                        Email Address
-                    </label>
+                {/* ================= CONTACT ================= */}
+                <div className="space-y-5">
+                    <h2 className="text-lg font-bold text-gray-800">
+                        Contact Details
+                    </h2>
 
-                    <input
-                        type="email"
-                        name="email"
-                        value={contact.email}
-                        onChange={handleChange}
-                        placeholder="Enter email"
-                        className="w-full border border-[#207F36] p-3 rounded-xl outline-none focus:ring-0 "
-                    />
+                    {/* EMAIL */}
+                    <div>
+                        <label className="text-sm text-gray-600 mb-2 block">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            value={contact.email}
+                            onChange={handleContactChange}
+                            className="w-full border border-[#207F36] p-3 rounded-xl outline-none"
+                        />
+                    </div>
+
+                    {/* PHONE */}
+                    <div>
+                        <label className="text-sm text-gray-600 mb-2 block">
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="text"
+                            name="phone"
+                            value={contact.phone}
+                            onChange={handleContactChange}
+                            className="w-full border border-[#207F36] p-3 rounded-xl outline-none"
+                        />
+                    </div>
+
+                    {/* ADDRESS */}
+                    <div>
+                        <label className="text-sm text-gray-600 mb-2 block">
+                            Address
+                        </label>
+
+                        <input
+                            type="text"
+                            name="address"
+                            value={contact.address}
+                            onChange={handleContactChange}
+                            className="w-full border border-[#207F36] p-3 rounded-xl outline-none"
+                        />
+                    </div>
                 </div>
 
-                {/* PHONE */}
-                <div>
-                    <label className="text-sm text-gray-600 mb-2 block">
-                        Phone Number
-                    </label>
+                {/* ================= SOCIAL MEDIA ================= */}
+                <div className="space-y-5">
+                    <h2 className="text-lg font-bold text-gray-800">
+                        Social Media Links
+                    </h2>
 
-                    <input
-                        type="text"
-                        name="phone"
-                        value={contact.phone}
-                        onChange={handleChange}
-                        placeholder="Enter phone number"
-                        className="w-full border border-[#0b7211] p-3 rounded-xl outline-none focus:ring-0 "
-                    />
-                </div>
+                    {/* TikTok */}
+                    <div>
+                        <label className="text-sm text-gray-600 mb-2 block">
+                            TikTok Link
+                        </label>
+                        <input
+                            type="text"
+                            name="tiktok"
+                            value={social.tiktok}
+                            onChange={handleSocialChange}
+                            placeholder="https://tiktok.com/@username"
+                            className="w-full border border-[#207F36] p-3 rounded-xl outline-none"
+                        />
+                    </div>
 
-                {/* ADDRESS */}
-                <div>
-                    <label className="text-sm text-gray-600 mb-2 block">
-                        Address
-                    </label>
+                    {/* Instagram */}
+                    <div>
+                        <label className="text-sm text-gray-600 mb-2 block">
+                            Instagram Link
+                        </label>
+                        <input
+                            type="text"
+                            name="instagram"
+                            value={social.instagram}
+                            onChange={handleSocialChange}
+                            placeholder="https://instagram.com/username"
+                            className="w-full border border-[#207F36] p-3 rounded-xl outline-none"
+                        />
+                    </div>
 
-                    <input
-                        type="text"
-                        name="address"
-                        value={contact.address}
-                        onChange={handleChange}
-                        placeholder="Enter address"
-                        className="w-full border border-[#207F36] p-3 rounded-xl outline-none focus:ring-0 "
-                    />
+                    {/* Twitter */}
+                    <div>
+                        <label className="text-sm text-gray-600 mb-2 block">
+                            Twitter Link
+                        </label>
+                        <input
+                            type="text"
+                            name="twitter"
+                            value={social.twitter}
+                            onChange={handleSocialChange}
+                            placeholder="https://twitter.com/username"
+                            className="w-full border border-[#207F36] p-3 rounded-xl outline-none"
+                        />
+                    </div>
+
+                    {/* YouTube */}
+                    <div>
+                        <label className="text-sm text-gray-600 mb-2 block">
+                            YouTube Link
+                        </label>
+                        <input
+                            type="text"
+                            name="youtube"
+                            value={social.youtube}
+                            onChange={handleSocialChange}
+                            placeholder="https://youtube.com/@channel"
+                            className="w-full border border-[#207F36] p-3 rounded-xl outline-none"
+                        />
+                    </div>
                 </div>
 
                 {/* SAVE BUTTON */}
                 <button
                     onClick={handleSave}
-                    className="flex items-center justify-center gap-2 cursor-pointer bg-[#207F36] hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold w-full"
+                    className="flex items-center justify-center gap-2 bg-[#207F36] cursor-pointer hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold w-full"
                 >
                     <FiSave />
-                    Save Contact Info
+                    Save All Information
                 </button>
             </div>
         </section>
