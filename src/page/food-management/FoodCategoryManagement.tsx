@@ -4,9 +4,10 @@ import { useState } from "react";
 import Category from "./Category";
 import Food from "./Food";
 import Offer from "./Offer";
+import Banner from "./Banner";
 
 export default function FoodCategoryManagement() {
-    const [openPage, setOpenPage] = useState<'Food' | 'Category' | 'Offer'>('Food');
+    const [openPage, setOpenPage] = useState<'Food' | 'Category' | 'Offer'|'Banner'>('Food');
 
     return (
         <div className="p-6">
@@ -49,6 +50,17 @@ export default function FoodCategoryManagement() {
                     🎁 Offer
                 </button>
 
+                <button
+                    onClick={() => setOpenPage('Banner')}
+                    className={`px-6 py-2 rounded-xl font-semibold cursor-pointer transition-all duration-200
+                    ${openPage === 'Banner'
+                            ? 'bg-[#207F36] text-white shadow-md'
+                            : 'text-gray-600 hover:bg-white'
+                        }`}
+                >
+                    📢 Banner
+                </button>
+
             </div>
 
             {/* CONTENT */}
@@ -56,6 +68,7 @@ export default function FoodCategoryManagement() {
                 {openPage === 'Category' && <Category />}
                 {openPage === 'Food' && <Food />}
                 {openPage === 'Offer' && <Offer />}
+                {openPage === 'Banner' && <Banner />}
             </div>
 
         </div>

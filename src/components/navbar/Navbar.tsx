@@ -3,6 +3,7 @@
 import  { useState, useRef, useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { FiLogOut, FiUser } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
@@ -22,6 +23,14 @@ const Navbar = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    const navigate = useNavigate();
+
+    const navigateToProfile = () => {
+        // Implement navigation to profile page
+        navigate("/admin-dashboard/settings/profile");
+        setOpen(false); // Close dropdown after navigation
+    };
 
     return (
         <div className="w-full flex justify-between items-center px-6 h-16   ">
@@ -48,7 +57,7 @@ const Navbar = () => {
                     <div className="absolute right-0 mt-3 w-48 bg-white border rounded-xl shadow-lg overflow-hidden z-50">
 
                         {/* Profile */}
-                        <button className="w-full text-black cursor-pointer flex items-center gap-2 px-4 py-3 hover:bg-gray-100 text-left">
+                        <button onClick={navigateToProfile} className="w-full text-black cursor-pointer flex items-center gap-2 px-4 py-3 hover:bg-gray-100 text-left">
                             <FiUser />
                             Profile
                         </button>
