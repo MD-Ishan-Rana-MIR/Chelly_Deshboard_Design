@@ -3,6 +3,11 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Label } from "../components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
+import { errorMessage } from "../lib/msg/errorMsg";
+import { useLoginMutation } from "../api/auth/authApi";
+import DotsLoader from './../components/loader/DotsLoader';
+import { toast } from "react-hot-toast";
+import Cookies from "js-cookie";
 
 type LoginFormValues = {
     email: string;
@@ -13,14 +18,36 @@ const LoginPage = () => {
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors, isSubmitting },
     } = useForm<LoginFormValues>();
 
     const navigate = useNavigate();
 
+    const [login,] = useLoginMutation();
+
     const onSubmit = async (data: LoginFormValues) => {
-        console.log("Form Data:", data);
-        navigate("/admin-dashboard");
+        try {
+            const res = await login(data).unwrap();
+
+            if (res) {
+                console.log("Login successful:", res);
+
+                // ✅ Set cookie
+                Cookies.set("token", res?.data?.access_token, {
+                    expires: 1, // 1 day
+                    secure: true,
+                    sameSite: "strict",
+                });
+
+                navigate("/admin-dashboard");
+                toast.success(res?.data?.message || "Login successful");
+                reset();
+            }
+        } catch (error) {
+            console.error("Login failed:", error);
+            errorMessage(error);
+        }
     };
 
     return (
@@ -89,7 +116,7 @@ const LoginPage = () => {
                         disabled={isSubmitting}
                         className="w-full bg-white text-black font-semibold text-sm  rounded-xl hover:bg-gray-200 transition"
                     >
-                        {isSubmitting ? "Logging in..." : "Login"}
+                        {isSubmitting ? <DotsLoader /> : "Login"}
                     </Button>
 
                     {/* Forgot Password */}

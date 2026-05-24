@@ -1,9 +1,9 @@
 
-import  {
+import React, {
 
+    useEffect,
     useState,
     type ChangeEvent,
-    type FormEvent,
 } from "react";
 
 import {
@@ -12,11 +12,20 @@ import {
     FiTrash2,
     FiX,
 } from "react-icons/fi";
+import { useAllBannerQuery, useBannerDeleteMutation, useBannerUpdateMutation, useStoreBannerMutation } from "../../api/banner/bannerApi";
+import ConfirmModal from "../../lib/alert/ConfirmModal";
+import { errorMessage } from "../../lib/msg/errorMsg";
+import toast from "react-hot-toast";
+import BannerSkeleton from "../../components/skeleton/BannerSkeleton";
+import { imgUrl } from './../../lib/url/url';
 
 type Banner = {
     id: number;
     title: string;
     image: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
 };
 
 export default function BannerPage() {
@@ -29,13 +38,61 @@ export default function BannerPage() {
 
     const [image, setImage] = useState<File | null>(null);
 
-    console.log(image);
+
 
     const [preview, setPreview] = useState<string>("");
 
-    const [editId, setEditId] = useState<number | null>(
-        null
-    );
+    const [editId, setEditId] = useState<number | null>(null);
+
+    const handleCloseModal = () => {
+        setTitle("");
+        setImage(null);
+        setPreview("");
+        setShowModal(false)
+
+    }
+
+
+    // =================================== Get All Banner Api ======================================
+
+
+    const { data, isLoading: BannerLoading } = useAllBannerQuery(undefined);
+
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const bannderData = data?.data?.data || [];
+
+    useEffect(() => {
+        setBanners(bannderData);
+    }, [bannderData]);
+
+    // Edit Banner
+    const handleEdit = (banner: Banner) => {
+        setEditId(banner.id);
+
+        setTitle(banner.title);
+        setPreview(`${imgUrl}/${banner.image}`);
+
+        setShowModal(true);
+    };
+
+
+
+    // ======================= Banner Post api ============================
+
+    const [storeBanner, { isLoading }] = useStoreBannerMutation();
+
+
+    // ======================= Banner UPdate api ============================
+
+    const [bannerUpdate, { isLoading: BannerUploadLoading }] = useBannerUpdateMutation();
+
+
+
+
+
+
+
 
     // Handle Image Upload
     const handleImageChange = (
@@ -52,70 +109,133 @@ export default function BannerPage() {
         }
     };
 
-    // Add / Update Banner
-    const handleSubmit = (
-        e: FormEvent<HTMLFormElement>
-    ) => {
-        e.preventDefault();
 
-        if (!title || !preview) {
-            alert("Please fill all fields");
-            return;
-        }
+
+
+    // =============================== Edit or Post Banner
+
+
+    const handleSubmit = async () => {
+
+        const formData = new FormData();
+
+        formData.append("title", title);
+        formData.append("status", "active");
 
         if (editId) {
-            // Update Banner
-            const updatedBanner = banners.map((banner) =>
-                banner.id === editId
-                    ? {
-                        ...banner,
-                        title,
-                        image: preview,
-                    }
-                    : banner
-            );
-
-            setBanners(updatedBanner);
-            setEditId(null);
-        } else {
-            // Add Banner
-            const newBanner: Banner = {
-                id: Date.now(),
-                title,
-                image: preview,
-            };
-
-            setBanners([...banners, newBanner]);
+            formData.append("_method", "PUT");
         }
 
-        // Reset
-        setTitle("");
-        setImage(null);
-        setPreview("");
-        setShowModal(false);
+        if (image) {
+            formData.append("image", image);
+        }
+
+        try {
+
+            // UPDATE
+            if (editId) {
+
+                const res = await bannerUpdate({
+                    editId,
+                    formData,
+                }).unwrap();
+
+                if (res) {
+                    toast.success(res?.message || "Banner updated successfully");
+                    setTitle("");
+                    setPreview("");
+                    setImage(null)
+                    setShowModal(false);
+                    return setOpenPopUpModal(false)
+                }
+
+            }
+
+            // CREATE
+            else {
+
+                const res = await storeBanner(formData).unwrap();
+
+                if (res) {
+                    toast.success(res?.message || "Banner created successfully");
+                    setOpenPopUpModal(false)
+                    setTitle("");
+                    setImage(null);
+                    setPreview("");
+                    return setShowModal(false);
+                }
+
+
+            }
+
+            setShowModal(false);
+
+        } catch (error) {
+            errorMessage(error);
+        }
     };
 
-    // Delete Banner
-    const handleDelete = (id: number) => {
-        const filtered = banners.filter(
-            (banner) => banner.id !== id
-        );
 
-        setBanners(filtered);
+
+    // ============================================ Delete Banner Api ================================
+    const [openPopUpModal, setOpenPopUpModal] = useState(false);
+    const [selectedDeleteId, setSelectedDeleteId] = useState<number | null>(null);
+
+    const handleLogoutCancel = () => {
+        if (isLoading) return;
+        setOpenPopUpModal(false);
+        setSelectedDeleteId(null);
     };
 
-    // Edit Banner
-    const handleEdit = (banner: Banner) => {
-        setEditId(banner.id);
+    const [bannerDelete] = useBannerDeleteMutation();
 
-        setTitle(banner.title);
-        setPreview(banner.image);
+    const [deletePopUp, setDeletePopUp] = useState(false);
 
-        setShowModal(true);
+    const handleDeleteClick = (id: number) => {
+        setSelectedDeleteId(id);
+        setDeletePopUp(true);
     };
+
+    const deletePopUpClose = () => {
+        setDeletePopUp(false)
+    }
+
+    const handleDelete = async () => {
+        if (selectedDeleteId === null) return;
+
+        try {
+            const res = await bannerDelete(selectedDeleteId).unwrap();
+            if (res) {
+                setOpenPopUpModal(false);
+                setSelectedDeleteId(null);
+                setDeletePopUp(false)
+                return toast.success(res?.message);
+            }
+        } catch (error) {
+            errorMessage(error);
+        }
+    };
+
+    const handlePopUpOpen = () => {
+        setOpenPopUpModal(true);
+    }
+
+
+
+    if (BannerLoading) {
+        return (
+            <div>
+                <BannerSkeleton></BannerSkeleton>
+            </div>
+        )
+    }
+
+
+
+
 
     return (
-        <div className="min-h-screen bg-gray-100 p-6">
+        <div className="min-h-screen bg-gray-100 p-6 rounded-2xl ">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
@@ -130,14 +250,7 @@ export default function BannerPage() {
 
                 {/* Upload Button */}
                 <button
-                    onClick={() => {
-                        setShowModal(true);
-
-                        setEditId(null);
-                        setTitle("");
-                        setImage(null);
-                        setPreview("");
-                    }}
+                    onClick={() => { setShowModal(true); }}
                     className="flex items-center gap-2 bg-[#207F36] text-white px-5 py-3 rounded-xl hover:bg-[#1a6a2d] cursor-pointer duration-300"
                 >
                     <FiPlus size={20} />
@@ -181,7 +294,7 @@ export default function BannerPage() {
 
                                     <td className="px-6 py-4">
                                         <img
-                                            src={banner.image}
+                                            src={`${imgUrl}/${banner.image}`}
                                             alt={banner.title}
                                             className="w-32 h-16 object-cover rounded-lg border"
                                         />
@@ -204,7 +317,7 @@ export default function BannerPage() {
                                             {/* Delete */}
                                             <button
                                                 onClick={() =>
-                                                    handleDelete(banner.id)
+                                                    handleDeleteClick(banner?.id)
                                                 }
                                                 className=" cursor-pointer w-10 h-10 rounded-lg bg-red-100 text-red-600  flex items-center justify-center hover:bg-red-200 duration-300"
                                             >
@@ -236,7 +349,7 @@ export default function BannerPage() {
                     <div className="bg-white w-full max-w-lg rounded-2xl p-6 relative">
                         {/* Close */}
                         <button
-                            onClick={() => setShowModal(false)}
+                            onClick={handleCloseModal}
                             className="absolute top-4 cursor-pointer right-4 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center"
                         >
                             <FiX />
@@ -250,8 +363,7 @@ export default function BannerPage() {
                         </h2>
 
                         {/* Form */}
-                        <form
-                            onSubmit={handleSubmit}
+                        <div
                             className="space-y-5"
                         >
                             {/* Banner Name */}
@@ -302,17 +414,62 @@ export default function BannerPage() {
 
                             {/* Submit */}
                             <button
+                                onClick={handlePopUpOpen}
                                 type="submit"
                                 className="w-full bg-[#207F36] text-white py-3 rounded-xl hover:bg-[#1a6a2d] cursor-pointer duration-300 font-semibold"
                             >
-                                {editId
-                                    ? "Update Banner"
-                                    : "Upload Banner"}
+                                Upload
                             </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}
+
+            <ConfirmModal
+                open={deletePopUp}
+                title="Are you sure you want to sure delete?"
+                description="Once deleted, this banner cannot be recovered."
+                confirmText={isLoading ? 'Deleting...' : "Delete"}
+                cancelText="Cancel"
+                onConfirm={handleDelete}
+                onCancel={deletePopUpClose}
+            />
+
+            {/* // For Post and Update  */}
+
+
+            <ConfirmModal
+                open={openPopUpModal}
+                title={
+                    editId
+                        ? "Are you sure you want to update this banner?"
+                        : "Are you sure you want to upload this banner?"
+                }
+                description={
+                    editId
+                        ? "The banner information will be updated."
+                        : "The new banner will be uploaded and visible to users."
+                }
+                confirmText={
+                    isLoading
+                        ? editId
+                            ? "Updating..."
+                            : "Uploading..."
+                        : editId
+                            ? "Update"
+                            : "Upload"
+                }
+                cancelText="Cancel"
+                onConfirm={handleSubmit}
+                onCancel={handleLogoutCancel}
+            />
+
+
+
+
+
+
+
         </div>
     );
 }
