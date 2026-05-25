@@ -7,6 +7,7 @@ type ConfirmModalProps = {
     description?: string;
     confirmText?: string;
     cancelText?: string;
+    loading?: boolean;
     onConfirm: () => void;
     onCancel: () => void;
 };
@@ -17,16 +18,17 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     description = "Do you really want to continue this action?",
     confirmText = "Yes",
     cancelText = "Cancel",
+    loading = false,
     onConfirm,
     onCancel,
 }) => {
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-[9999] h-screen flex items-center justify-center">
+        <div className="fixed inset-0 z-[9999] flex h-screen items-center justify-center">
             {/* Overlay */}
             <div
-                onClick={onCancel}
+                onClick={!loading ? onCancel : undefined}
                 className="absolute inset-0 bg-black/50"
             />
 
@@ -35,7 +37,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 {/* Close button */}
                 <button
                     onClick={onCancel}
-                    className="absolute right-3 cursor-pointer top-3 text-gray-500 hover:text-black"
+                    disabled={loading}
+                    className="absolute right-3 top-3 cursor-pointer text-gray-500 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <X size={20} />
                 </button>
@@ -55,15 +58,25 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 <div className="mt-6 flex justify-end gap-3">
                     <button
                         onClick={onCancel}
-                        className="rounded-lg cursor-pointer border px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
+                        disabled={loading}
+                        className="rounded-lg border cursor-pointer px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {cancelText}
                     </button>
 
                     <button
                         onClick={onConfirm}
-                        className="rounded-lg cursor-pointer bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600"
+                        disabled={loading}
+                        className={`flex min-w-[120px] items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm text-white transition-all duration-300
+                        ${loading
+                                ? "cursor-not-allowed bg-red-400"
+                                : "cursor-pointer bg-red-500 hover:bg-red-600"
+                            }`}
                     >
+                        {loading && (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        )}
+
                         {confirmText}
                     </button>
                 </div>
