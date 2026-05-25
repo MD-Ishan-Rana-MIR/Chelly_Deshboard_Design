@@ -2,7 +2,7 @@ import React from "react";
 
 type StatsCardItemProps = {
     title: string;
-    value: string;
+    value: number;
     subtitle: string;
     icon: React.ReactNode;
 };

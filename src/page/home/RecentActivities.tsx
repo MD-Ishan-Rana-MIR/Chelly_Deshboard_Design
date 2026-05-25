@@ -1,43 +1,11 @@
+import type { Order } from "./HomePage";
 
-const RecentActivities = () => {
-    const tableData = [
-        {
-            date: "2026-02-23",
-            customer: "John Doe",
-            orderId: "#FD1023",
-            status: "Delivered",
-            amount: "$24.50",
-            type: "success",
-        },
-        {
-            date: "2026-02-22",
-            customer: "Sarah Lee",
-            orderId: "#FD1024",
-            status: "Processing",
-            amount: "$18.00",
-            type: "info",
-        },
-        {
-            date: "2026-02-22",
-            customer: "Michael Smith",
-            orderId: "#FD1025",
-            status: "Pending",
-            amount: "$32.75",
-            type: "warning",
-        },
-        {
-            date: "2026-02-21",
-            customer: "Amanda Clark",
-            orderId: "#FD1026",
-            status: "Cancelled",
-            amount: "$15.00",
-            type: "danger",
-        },
-    ];
+const RecentActivities = ({ resentOrder }: { resentOrder: Order[] }) => {
+
 
     const getBadgeStyle = (type: string) => {
         switch (type) {
-            case "success":
+            case "pending":
                 return "bg-green-100 text-green-700";
             case "info":
                 return "bg-blue-100 text-blue-700";
@@ -80,31 +48,31 @@ const RecentActivities = () => {
 
                     {/* Body */}
                     <tbody>
-                        {tableData.map((item, index) => (
+                        {resentOrder.map((item, index) => (
                             <tr
                                 key={index}
                                 className="border-b last:border-none hover:bg-gray-50 transition"
                             >
                                 {/* Date */}
                                 <td className="px-5 py-4 text-sm text-gray-600">
-                                    {item.date}
+                                   {    new Date(item.created_at).toLocaleString()}
                                 </td>
 
                                 {/* Customer */}
                                 <td className="px-5 py-4 text-sm font-medium text-gray-800">
-                                    {item.customer}
+                                    {item.user?.name}
                                 </td>
 
                                 {/* Order ID */}
                                 <td className="px-5 py-4 text-sm text-gray-500">
-                                    {item.orderId}
+                                    {item.order_number}
                                 </td>
 
                                 {/* Status */}
                                 <td className="px-5 py-4">
                                     <span
                                         className={`px-3 py-1 rounded-full text-xs font-semibold ${getBadgeStyle(
-                                            item.type
+                                            item.status
                                         )}`}
                                     >
                                         {item.status}
@@ -113,7 +81,7 @@ const RecentActivities = () => {
 
                                 {/* Amount */}
                                 <td className="px-5 py-4 text-sm font-semibold text-gray-800">
-                                    {item.amount}
+                                    {item.total_amount}
                                 </td>
                             </tr>
                         ))}
