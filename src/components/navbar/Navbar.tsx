@@ -1,20 +1,25 @@
-"use client";
-
 import { useState, useRef, useEffect } from "react";
-import { FaUserCircle } from "react-icons/fa";
 import { FiLogOut, FiUser, FiBell } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useLogoutMutation } from "../../api/auth/authApi";
+import { useAdminProfileQuery, useLogoutMutation } from "../../api/auth/authApi";
 import ConfirmModal from "../../lib/alert/ConfirmModal";
 import { errorMessage } from "../../lib/msg/errorMsg";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
+import { imgUrl } from "../../lib/url/url";
 
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
     const [openPopUpModal, setOpenPopUpModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    // ========================================= Admin Profile Api ===============================
+
+    const {data} = useAdminProfileQuery(undefined);
+
+
+
 
     // demo notification count (replace with API later)
     const [notificationCount] = useState(5);
@@ -76,6 +81,8 @@ const Navbar = () => {
         setOpenPopUpModal(false);
     };
 
+    
+
     return (
         <>
             <div className="w-full flex justify-between items-center px-6 h-16">
@@ -106,7 +113,7 @@ const Navbar = () => {
                             onClick={() => setOpen(!open)}
                             className="flex items-center gap-2 cursor-pointer"
                         >
-                            <FaUserCircle size={32} className="text-gray-600" />
+                            <img src={`${imgUrl}/${data?.data?.avatar}`} className=" w-10 h-10 rounded-full  " width={40} height={40}   />
                             <span className="font-medium text-white">Admin</span>
                         </button>
 

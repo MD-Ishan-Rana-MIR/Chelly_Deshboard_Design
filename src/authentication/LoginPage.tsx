@@ -7,7 +7,6 @@ import { errorMessage } from "../lib/msg/errorMsg";
 import { useLoginMutation } from "../api/auth/authApi";
 import DotsLoader from './../components/loader/DotsLoader';
 import { toast } from "react-hot-toast";
-import Cookies from "js-cookie";
 
 type LoginFormValues = {
     email: string;
@@ -34,11 +33,7 @@ const LoginPage = () => {
                 console.log("Login successful:", res);
 
                 // ✅ Set cookie
-                Cookies.set("token", res?.data?.access_token, {
-                    expires: 1, // 1 day
-                    secure: true,
-                    sameSite: "strict",
-                });
+                localStorage.setItem("token",res?.data?.access_token)
 
                 navigate("/admin-dashboard");
                 toast.success(res?.data?.message || "Login successful");

@@ -29,7 +29,7 @@ export interface UserType {
     updated_at: string;
 }
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 export default function UserManagementPage() {
 
@@ -109,7 +109,7 @@ export default function UserManagementPage() {
 
     // ==================================================== Deleete user api ============================================
 
-    const [deleteUser,{isLoading:deleteLoading}] = useDeleteUserMutation();
+    const [deleteUser, { isLoading: deleteLoading }] = useDeleteUserMutation();
 
     const [deletePopUp, setDeletePopUp] = useState(false);
 
@@ -118,10 +118,12 @@ export default function UserManagementPage() {
         setId(id)
     };
 
-    const handleDelete = async ()=>{
+    const handleDelete = async () => {
         try {
             const res = await deleteUser(id).unwrap();
-            if(res){
+            if (res) {
+                setDeletePopUp(false);
+
                 return toast.success(res?.message);
             }
         } catch (error) {
@@ -129,7 +131,7 @@ export default function UserManagementPage() {
         }
     }
 
-    const deleteModalClose = ()=>{
+    const deleteModalClose = () => {
         setDeletePopUp(false);
         setId(null);
     }
@@ -255,7 +257,7 @@ export default function UserManagementPage() {
                                         </button>
 
                                         {/* DELETE */}
-                                        <button onClick={()=>{openDeletePopUpModal(user?.id)}} className="p-2 rounded-full cursor-pointer hover:bg-red-50">
+                                        <button onClick={() => { openDeletePopUpModal(user?.id) }} className="p-2 rounded-full cursor-pointer hover:bg-red-50">
                                             <FaTrash className="text-red-500" />
                                         </button>
 
@@ -271,9 +273,9 @@ export default function UserManagementPage() {
 
             {/* PAGINATION */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-6">
+                <div className="flex items-center justify-end mt-6">
 
-                    <p className="text-sm text-gray-500">
+                    {/* <p className="text-sm text-gray-500">
                         Showing{" "}
                         <span className="font-semibold">
                             {(currentPage - 1) * ITEMS_PER_PAGE + 1}
@@ -290,7 +292,7 @@ export default function UserManagementPage() {
                             {filteredUsers.length}
                         </span>{" "}
                         users
-                    </p>
+                    </p> */}
 
                     <div className="flex items-center gap-2">
 

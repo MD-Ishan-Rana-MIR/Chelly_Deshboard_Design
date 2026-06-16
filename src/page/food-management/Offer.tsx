@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { FiPlus, FiTrash2, FiEdit2, FiX, FiEdit } from "react-icons/fi";
+import { FiPlus, FiTrash2,FiX, FiEdit } from "react-icons/fi";
 import { Editor } from "primereact/editor";
 import { useAllOfferQuery, useDeleteOfferMutation, usePostOfferMutation, useUpdateOfferMutation } from "../../api/offer/offerApi";
 import ConfirmModal from "../../lib/alert/ConfirmModal";

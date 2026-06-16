@@ -3,9 +3,9 @@ import { baseApi } from "../../router/base-api/baseApi";
 export const categoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     allCategory: builder.query({
-      query: () => ({
-        url: `/categories`,
-        method: "get",
+      query: ({ page, per_page, include = "foods" }) => ({
+        url: "categories",
+        params: { page, per_page, include },
       }),
       providesTags: ["Category"],
     }),

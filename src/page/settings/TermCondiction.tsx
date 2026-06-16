@@ -1,28 +1,76 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Editor } from 'primereact/editor';
 import { FiSave } from 'react-icons/fi';
+import { useGetSettingPageQuery, useStoreSettingPageMutation } from '../../api/setting/settingApi';
+import { errorMessage } from '../../lib/msg/errorMsg';
+import toast from 'react-hot-toast';
+import DotsLoader from '../../components/loader/DotsLoader';
 
 type TermsType = {
-    title: string;
-    content: string;
+    terms_conditions: string;
 };
 
 export default function TermCondiction() {
     const [form, setForm] = useState<TermsType>({
-        title: '',
-        content: '',
+        terms_conditions: '',
     });
 
-    // TITLE CHANGE
+    // ============================== Get Privacy Policy ==============================
+    const {
+        data,
+        isLoading: isTermsLoading,
+        refetch,
+    } = useGetSettingPageQuery('terms_conditions');
 
+    // ============================== Save Privacy Policy ==============================
+    const [storeSettingPage, { isLoading }] = useStoreSettingPageMutation();
 
-    // SAVE
-    const handleSave = () => {
-        console.log(form);
-        alert('Terms & Conditions saved successfully!');
+    useEffect(() => {
+        if (data?.data?.terms_conditions) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setForm({
+                terms_conditions: data.data.terms_conditions,
+            });
+        }
+    }, [data?.data?.terms_conditions]);
+
+    const handleSave = async () => {
+        // Remove HTML tags and check if editor is actually empty
+        const plainText = form.terms_conditions
+            .replace(/<[^>]*>/g, '')
+            .replace(/&nbsp;/g, '')
+            .trim();
+
+        if (!plainText) {
+            return toast.error('Privacy policy is required');
+        }
+
+        const payload = {
+            terms_conditions: form.terms_conditions
+        }
+
+        try {
+            const res = await storeSettingPage(payload).unwrap();
+
+            toast.success(res?.message || 'Privacy Policy Saved Successfully');
+
+            refetch();
+            return;
+        } catch (error) {
+            return errorMessage(error);
+        }
     };
+
+      // ============================== Loading State ==============================
+      if (isTermsLoading) {
+        return (
+          <div className="min-h-screen flex items-center justify-center">
+            <DotsLoader />
+          </div>
+        );
+      }
 
     return (
         <section className="min-h-screen bg-gray-50 p-6 md:p-10">
@@ -49,26 +97,34 @@ export default function TermCondiction() {
 
                     <div className="border rounded-xl overflow-hidden">
                         <Editor
-                            value={form.content}
+                            value={form.terms_conditions}
                             onTextChange={(e) =>
                                 setForm({
                                     ...form,
-                                    content: e.htmlValue || '',
+                                    terms_conditions: e.htmlValue || '',
                                 })
                             }
-                            style={{ height: '320px' }}
+                            style={{ height: '520px' }}
                         />
                     </div>
                 </div>
 
                 {/* SAVE BUTTON */}
                 <button
-                    onClick={handleSave}
-                    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold w-full"
-                >
-                    <FiSave />
-                    Save Terms & Conditions
-                </button>
+                          type="button"
+                          onClick={handleSave}
+                          disabled={isLoading}
+                          className="flex cursor-pointer items-center justify-center gap-2 bg-[#207F36] hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold w-full disabled:opacity-70 disabled:cursor-not-allowed"
+                        >
+                          {isLoading ? (
+                            <DotsLoader />
+                          ) : (
+                            <>
+                              <FiSave size={18} />
+                              <span>Save Term & Condiction</span>
+                            </>
+                          )}
+                        </button>
             </div>
         </section>
     );

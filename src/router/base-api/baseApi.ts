@@ -1,14 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import Cookies from "js-cookie";
+
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 export const baseApi = createApi({
   reducerPath: "api",
 
   baseQuery: fetchBaseQuery({
-    baseUrl: `${baseUrl}/`,
+    baseUrl: `${baseUrl}`,
 
     prepareHeaders: (headers) => {
-      const token = Cookies.get("token");
+      const token = localStorage.getItem("token");
 
       headers.set("Accept", "application/json");
 
@@ -20,6 +21,6 @@ export const baseApi = createApi({
     },
   }),
 
-  tagTypes: ["Auth","Banner","Offer","Category","User"],
+  tagTypes: ["Auth", "Banner", "Offer", "Category", "User", "Blog","Setting","Order","Food"],
   endpoints: () => ({}),
 });

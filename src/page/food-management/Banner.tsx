@@ -1,5 +1,5 @@
 
-import React, {
+import  {
 
     useEffect,
     useState,
@@ -155,14 +155,14 @@ export default function BannerPage() {
             else {
 
                 const res = await storeBanner(formData).unwrap();
-
+                setShowModal(false);
                 if (res) {
                     toast.success(res?.message || "Banner created successfully");
                     setOpenPopUpModal(false)
                     setTitle("");
                     setImage(null);
                     setPreview("");
-                    return setShowModal(false);
+                    return ;
                 }
 
 
@@ -187,7 +187,7 @@ export default function BannerPage() {
         setSelectedDeleteId(null);
     };
 
-    const [bannerDelete] = useBannerDeleteMutation();
+    const [bannerDelete,{isLoading:deleteLoading}] = useBannerDeleteMutation();
 
     const [deletePopUp, setDeletePopUp] = useState(false);
 
@@ -429,7 +429,7 @@ export default function BannerPage() {
                 open={deletePopUp}
                 title="Are you sure you want to sure delete?"
                 description="Once deleted, this banner cannot be recovered."
-                confirmText={isLoading ? 'Deleting...' : "Delete"}
+                confirmText={deleteLoading ? 'Deleting...' : "Delete"}
                 cancelText="Cancel"
                 onConfirm={handleDelete}
                 onCancel={deletePopUpClose}

@@ -1,7 +1,10 @@
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEmailVerifyMutation, useOtpVerifyMutation } from "../api/auth/authApi";
+import { errorMessage } from "../lib/msg/errorMsg";
+import toast from "react-hot-toast";
 
 type FormValues = {
     otp: string[];
@@ -47,11 +50,54 @@ const OtpVerify = () => {
         }
     };
 
-    const onSubmit = (data: FormValues) => {
-        const finalOtp = data.otp.join("");
-        console.log("Submitted OTP:", finalOtp);
-        navigate("/change-password");
+    // ==================================== Otp Verify api ===================================
+
+    const [otpVerify] = useOtpVerifyMutation();
+
+
+    const onSubmit = async (data: FormValues) => {
+        try {
+            const finalOtp = data.otp.join("");
+            const payload = {
+                email,
+                otp: finalOtp,
+            };
+            const res = await otpVerify(payload).unwrap();
+            if (res) {
+                toast.success(res?.message);
+                return navigate("/change-password");
+            }
+        } catch (error) {
+
+            return errorMessage(error);
+
+        }
     };
+
+
+    const [searchParams] = useSearchParams();
+
+    const email = searchParams.get("email");
+
+
+    // ========================== Resend Otp api ===========================
+    const [emailVerify,] = useEmailVerifyMutation();
+    const data = {
+        email: email
+    }
+    const handleResendOtp = async () => {
+        try {
+            const res = await emailVerify(data).unwrap();
+            if (res) {
+                return toast.success(res?.message)
+            }
+        } catch (error) {
+            return errorMessage(error)
+        }
+    }
+
+
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b7211] to-[#0a4f90] px-5">
@@ -107,8 +153,9 @@ const OtpVerify = () => {
                     <p className="text-center text-sm text-zinc-500">
                         Didn’t receive the code?{" "}
                         <button
+                            onClick={handleResendOtp}
                             type="button"
-                            className="text-green-700 font-medium hover:underline"
+                            className="text-green-700 font-medium hover:underline cursor-pointer "
                         >
                             Resend
                         </button>

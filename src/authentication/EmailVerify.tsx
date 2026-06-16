@@ -3,6 +3,9 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Label } from "../components/ui/label";
 import { useNavigate } from "react-router-dom";
+import { useEmailVerifyMutation } from "../api/auth/authApi";
+import { errorMessage } from "../lib/msg/errorMsg";
+import toast from "react-hot-toast";
 
 type LoginFormValues = {
     email: string;
@@ -17,9 +20,21 @@ const EmailVerify = () => {
 
     const navigate = useNavigate();
 
+    const [emailVerify, ] = useEmailVerifyMutation();
+
     const onSubmit = async (data: LoginFormValues) => {
-        console.log("Form Data:", data);
-        navigate("/otp-verify");
+        try {
+            const res = await emailVerify(data).unwrap();
+
+            if (res) {
+                navigate(`/otp-verify?email=${data?.email}`);
+
+                toast.success(res?.message);
+            }
+
+        } catch (error) {
+            errorMessage(error);
+        }
     };
 
     return (
