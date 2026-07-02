@@ -76,6 +76,6 @@ const echo = new Echo({
 });
 
 // This is the ultimate test: It will fire on ANY connection state change
-echo.connector.pusher.connection.bind("state_change", function (states: any) {});
+echo.connector.pusher.connection.bind("state_change", function () {});
 
 export default echo;
