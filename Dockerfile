@@ -44,5 +44,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Expose port 80 for internal Docker network communication
 EXPOSE 80
 
+
 # Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
