@@ -13,13 +13,18 @@ import FAQs from "./../page/settings/FAQs";
 import HomePage from "../page/home/HomePage";
 import OrderManagement from "../page/order-management/OrderManagement";
 import FoodManagement from "../page/food-management/FoodManagement";
-import NotFound from "../components/ui/NotFoun";
 import BlogManagement from "../page/blog-management/BlogManagement";
 import TermCondiction from "../page/settings/TermCondiction";
 import PrivacyPolicy from "../page/settings/PrivacyPolicy";
 import PaymentGuidePage from "../page/settings/PaymentGuide";
+import Notification from "../page/notification/Notification";
+import NotFound from './../components/ui/NotFoun';
 
 export const router = createBrowserRouter([
+   {
+    path : "*",
+    element : React.createElement(NotFound),
+  },
   {
     path: "/",
     element: React.createElement(LoginPage),
@@ -73,12 +78,16 @@ export const router = createBrowserRouter([
         element: React.createElement(PrivacyPolicy),
       },
       {
+        path: "settings/notification",
+        element: React.createElement(Notification),
+      },
+      {
         path: "settings/faq",
         element: React.createElement(FAQs),
       },
       {
-        path : "settings/payment",
-        element : React.createElement(PaymentGuidePage)
+        path: "settings/payment",
+        element: React.createElement(PaymentGuidePage),
       },
       {
         path: "blog-management",
@@ -90,4 +99,5 @@ export const router = createBrowserRouter([
       },
     ],
   },
+ 
 ]);

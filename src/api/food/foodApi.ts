@@ -4,7 +4,6 @@ export const foodApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getFoods: builder.query({
       query: (params) => {
-        console.log(" i am from api params",params)
         const searchParams = new URLSearchParams();
 
         searchParams.append("include", "category");

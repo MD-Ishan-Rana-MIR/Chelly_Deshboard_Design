@@ -4,6 +4,7 @@ import Pagination from '../../components/pagination/Pagination';
 import StatusUpdateModal from './StatusUpdateModal';
 import OrderDetailsModal from './OrderDetailsModal';
 import type { Order } from '../../lib/type/type';
+import RefaundModal from './RefaundModal';
 
 export default function OrderManagementPage() {
     const [searchId, setSearchId] = useState('');
@@ -39,12 +40,13 @@ export default function OrderManagementPage() {
         total: data?.data?.total || 0
     };
 
-    console.log("data?.data?.data ", data?.data?.data)
-
     // Modals state
     const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
     const [updatingOrder, setUpdatingOrder] = useState<any | null>(null);
     const [newStatus, setNewStatus] = useState('');
+    const [openRefundModal, setOpenRefundModal] = useState(false);
+    const [selectedRefundId, setSelectedRefundId] = useState<number | null>(null);
+    const [openViewDetails, setOpenViewDetails] = useState(false);
 
     const exportOrdersToCSV = () => {
         const headers = [
@@ -113,18 +115,15 @@ export default function OrderManagementPage() {
         setNewStatus(order.status);
     };
 
+    const openViewDetailsModal = (order: Order) => {
+        setSelectedOrder(order);
+        setOpenViewDetails(true);
+    };
 
-    // ======================================= Order View Details Modal==================================
-
-    const [openViewDetails, setOpenViewDetails] = useState(false)
-
-
-
-    const openViewDetailsModal = (order:Order) => {
-        setSelectedOrder(order)
-        setOpenViewDetails(true)
-    }
-
+    const handleOpenRefundModal = (id: number) => {
+        setSelectedRefundId(id);
+        setOpenRefundModal(true);
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-8 rounded-2xl ">
@@ -178,7 +177,6 @@ export default function OrderManagementPage() {
                             onChange={(e) => handleFilterChange(setStatusFilter, e.target.value)}
                             className="rounded-xl border border-[#207F36] hover:ring-0 focus:outline-0 focus:ring-0 px-4 py-3"
                         >
-                            {/* pending,processing,completed,cancelled */}
                             <option>All Order Status</option>
                             <option value="completed">Completed</option>
                             <option value="pending">Pending</option>
@@ -218,7 +216,7 @@ export default function OrderManagementPage() {
                                     <tr>
                                         <td colSpan={7} className="text-center py-10 text-gray-400">Loading orders data...</td>
                                     </tr>
-                                ) : ordersList.length === 0 ? (
+                                ) : ordersList.length === 1 ? (
                                     <tr>
                                         <td colSpan={7} className="text-center py-10 text-gray-400">No orders found matching the filter criteria.</td>
                                     </tr>
@@ -240,7 +238,7 @@ export default function OrderManagementPage() {
 
                                             <td className="px-6 py-5 text-right flex justify-end gap-2">
                                                 <button
-                                                   onClick={()=>{openViewDetailsModal(order)}}
+                                                    onClick={() => { openViewDetailsModal(order) }}
                                                     className="rounded-xl cursor-pointer border border-[#207F36] hover:bg-gray-50 px-3 py-2 text-sm text-gray-700"
                                                 >
                                                     View
@@ -250,6 +248,12 @@ export default function OrderManagementPage() {
                                                     className="rounded-xl cursor-pointer bg-[#207F36] text-white hover:bg-[#1a6b2c] px-3 py-2 text-sm"
                                                 >
                                                     Update Status
+                                                </button>
+                                                <button
+                                                    onClick={() => handleOpenRefundModal(order.id)}
+                                                    className="rounded-xl cursor-pointer bg-[#207F36] text-white hover:bg-[#1a6b2c] px-3 py-2 text-sm"
+                                                >
+                                                    Refund
                                                 </button>
                                             </td>
                                         </tr>
@@ -284,10 +288,10 @@ export default function OrderManagementPage() {
                 <StatusUpdateModal setUpdatingOrder={setUpdatingOrder} updatingOrder={updatingOrder} newStatus={newStatus} setNewStatus={setNewStatus} />
             )}
 
-
-
-
-
+            {/* REFUND MODAL */}
+            {openRefundModal && (
+                <RefaundModal orderId={selectedRefundId} isOpen={openRefundModal} onClose={() => setOpenRefundModal(false)} />
+            )}
         </div>
     );
 }

@@ -7,6 +7,7 @@ import { errorMessage } from "../lib/msg/errorMsg";
 import { useLoginMutation } from "../api/auth/authApi";
 import DotsLoader from './../components/loader/DotsLoader';
 import { toast } from "react-hot-toast";
+import { useEffect } from "react";
 
 type LoginFormValues = {
     email: string;
@@ -33,7 +34,7 @@ const LoginPage = () => {
                 console.log("Login successful:", res);
 
                 // ✅ Set cookie
-                localStorage.setItem("token",res?.data?.access_token)
+                localStorage.setItem("token", res?.data?.access_token)
 
                 navigate("/admin-dashboard");
                 toast.success(res?.data?.message || "Login successful");
@@ -44,6 +45,15 @@ const LoginPage = () => {
             errorMessage(error);
         }
     };
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        if (!token) {
+            window.location.href = "/"
+        } else {
+            window.location.href = "/admin-dashboard"
+        }
+    }, [token])
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b7211] via-[#0a4f90] to-[#0b1b3a] px-4">

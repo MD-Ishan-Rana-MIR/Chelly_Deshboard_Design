@@ -48,9 +48,17 @@ export const orderApi = baseApi.injectEndpoints({
         method: "PUT",
         body: payload,
       }),
+      invalidatesTags: ["Order"],
+    }),
+    refundPayment: builder.mutation({
+      query: ({ id, payload }) => ({
+        url: `/admin/orders/${id}/refund`,
+        method: "POST",
+        body: payload,
+      }),
       invalidatesTags : ["Order"]
     }),
   }),
 });
 
-export const { useAllOrderQuery , useOrderStatusUpdateMutation} = orderApi;
+export const { useAllOrderQuery, useOrderStatusUpdateMutation,useRefundPaymentMutation } = orderApi;

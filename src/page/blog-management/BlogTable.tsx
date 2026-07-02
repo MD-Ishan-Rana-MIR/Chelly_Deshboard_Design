@@ -188,7 +188,7 @@ export default function BlogPage() {
                         onPageChange={(targetPage) => setPage(targetPage)}
                         onPerPageChange={(newSize) => {
                             setPerPage(newSize);
-                            setPage(1); // Drops index to safe boundaries if per-page metrics clip constraints
+                            setPage(1); 
                         }}
                     />
                 )}

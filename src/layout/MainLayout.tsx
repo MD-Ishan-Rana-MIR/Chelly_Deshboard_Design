@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Navigate, Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/navbar/Navbar";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { IoChevronDown } from "react-icons/io5";
@@ -20,6 +20,13 @@ export default function Layout() {
     }, [pathname]);
 
     const isActive = (path: string) => pathname === path;
+
+    const token = localStorage.getItem("token");
+
+    // টোকেন না থাকলে লগইন পেজে রিডাইরেক্ট করবে
+    if (!token) {
+        return <Navigate to="/" replace />;
+    }
 
     return (
         <div className="min-h-screen flex bg-gradient-to-br from-[#0b7211] to-[#0a4f90]">
@@ -174,8 +181,9 @@ export default function Layout() {
                                         { name: "Contact Us", path: "/admin-dashboard/settings/contact" },
                                         { name: "Privacy Policy", path: "/admin-dashboard/settings/privacy" },
                                         { name: "Terms & Conditions", path: "/admin-dashboard/settings/terms" },
-                                        { name: "Payment Guidelines", path: "/admin-dashboard/settings/payment" },
-                                        { name: "FAQs", path: "/admin-dashboard/settings/faq" },
+                                        { name: "Notification", path: "/admin-dashboard/settings/notification" },
+                                        // { name: "Payment Guidelines", path: "/admin-dashboard/settings/payment" },
+                                        // { name: "FAQs", path: "/admin-dashboard/settings/faq" },
                                     ].map((item) => (
                                         <li key={item.path}>
                                             <Link
