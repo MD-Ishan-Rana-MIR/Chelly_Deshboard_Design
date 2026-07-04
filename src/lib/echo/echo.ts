@@ -40,38 +40,11 @@ const echo = new Echo({
   forceTLS: isTls,
   enabledTransports: ['ws', 'wss'],
   authEndpoint: authEndpoint,
-  authorizer: (channel: { name: string }) => {
-    return {
-      authorize: (
-        socketId: string,
-        callback: (error: Error | null, responseData: any | null) => void,
-      ) => {
-        const token = localStorage.getItem("token");
-
-        axios
-          .post(
-            authEndpoint,
-            {
-              socket_id: socketId,
-              channel_name: channel.name,
-            },
-            {
-              headers: {
-                Accept: "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-              },
-            },
-          )
-          .then((response: AxiosResponse) => {
-            console.log("=== DEBUG 6: Auth Success ===", response.data);
-            callback(null, response.data);
-          })
-          .catch((error: Error) => {
-            console.error("=== DEBUG 7: Auth Failed ===", error);
-            callback(error, null);
-          });
-      },
-    };
+  auth: {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Accept: "application/json",
+    },
   },
 });
 
