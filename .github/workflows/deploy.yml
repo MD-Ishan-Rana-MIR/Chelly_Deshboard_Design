@@ -41,6 +41,7 @@ jobs:
             VITE_REVERB_PORT=${{ secrets.VITE_REVERB_PORT }}
             VITE_REVERB_SCHEME=${{ secrets.VITE_REVERB_SCHEME }}
             VITE_API_URL=${{ secrets.VITE_API_URL }}
+            VITE_BROADCAST_AUTH_ENDPOINT=${{ secrets.VITE_BROADCAST_AUTH_ENDPOINT }}
 
 
       - name: Deploy to Server via SSH
