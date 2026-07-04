@@ -52,4 +52,8 @@ jobs:
             cd ${{ secrets.DEPLOY_PATH }}
             docker compose pull cheyyla-dashboard
             docker compose up -d --no-deps cheyyla-dashboard
+            
+            echo "🔄 Reloading Nginx..."
+            docker compose exec -T chelly-nginx nginx -s reload
+            
             docker image prune -f
