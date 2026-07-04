@@ -17,7 +17,6 @@ Pusher.logToConsole = true;
 // console.log("AUTH ENDPOINT:", import.meta.env.VITE_BROADCAST_AUTH_ENDPOINT);
 
 const reverbHost = import.meta.env.VITE_REVERB_HOST || "10.10.28.53";
-const reverbPort = Number(import.meta.env.VITE_REVERB_PORT || 8020);
 const authEndpoint =
   import.meta.env.VITE_BROADCAST_AUTH_ENDPOINT ||
   "https://api.lovelysmealplans.com/api/broadcasting/auth";
