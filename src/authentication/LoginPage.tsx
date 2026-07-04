@@ -7,7 +7,6 @@ import { errorMessage } from "../lib/msg/errorMsg";
 import { useLoginMutation } from "../api/auth/authApi";
 import DotsLoader from './../components/loader/DotsLoader';
 import { toast } from "react-hot-toast";
-import { useEffect } from "react";
 
 type LoginFormValues = {
     email: string;
