@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useDashboardStatasQuery } from '../../api/dashboard/dashboardApi'
 import DashboardSkeleton from '../../components/skeleton/DashboardSkeleton';
 import RecentActivities from './RecentActivities'
@@ -24,14 +25,23 @@ export interface Statas {
 }
 
 const HomePage = () => {
-    const { data ,isLoading} = useDashboardStatasQuery(undefined);
+    const { data, isLoading } = useDashboardStatasQuery(undefined);
     const statisticsData: Statas = data?.data?.statistics;
     const resentOrder: Order[] = data?.data?.recent_orders || [];
+    const token = localStorage.getItem("token");
 
-    if(isLoading){
-        return(
+    useEffect(() => {
+        if (!token) {
+            window.location.href = "/"
+        } else {
+            window.location.href = "/admin-dashboard"
+        }
+    }, [token])
+
+    if (isLoading) {
+        return (
             <div>
-                <DashboardSkeleton/>
+                <DashboardSkeleton />
             </div>
         )
     }
@@ -40,7 +50,7 @@ const HomePage = () => {
         <div>
             <h1 className=' text-[33px] font-semibold mb-10  text-white ' >Dashboard</h1>
             <StatsCard statisticsData={statisticsData} />
-            <RecentActivities resentOrder = {resentOrder}  />
+            <RecentActivities resentOrder={resentOrder} />
         </div>
     )
 }

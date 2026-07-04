@@ -45,15 +45,7 @@ const LoginPage = () => {
             errorMessage(error);
         }
     };
-    const token = localStorage.getItem("token");
 
-    useEffect(() => {
-        if (!token) {
-            window.location.href = "/"
-        } else {
-            window.location.href = "/admin-dashboard"
-        }
-    }, [token])
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b7211] via-[#0a4f90] to-[#0b1b3a] px-4">

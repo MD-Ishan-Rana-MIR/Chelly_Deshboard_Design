@@ -45,6 +45,8 @@ export default function UserManagementPage() {
         total: data?.meta?.total || 0
     };
 
+    console.log("=== DEBUG 1: Users Data ===", meta);
+
     // FILTER USERS
     const filteredUsers = useMemo(() => {
         return users.filter((user) => {
