@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // useNavigate ইম্পোর্ট করুন
 import { useDashboardStatasQuery } from '../../api/dashboard/dashboardApi'
 import DashboardSkeleton from '../../components/skeleton/DashboardSkeleton';
 import RecentActivities from './RecentActivities'
@@ -25,6 +26,7 @@ export interface Statas {
 }
 
 const HomePage = () => {
+    const navigate = useNavigate();
     const { data, isLoading } = useDashboardStatasQuery(undefined);
     const statisticsData: Statas = data?.data?.statistics;
     const resentOrder: Order[] = data?.data?.recent_orders || [];
@@ -32,11 +34,10 @@ const HomePage = () => {
 
     useEffect(() => {
         if (!token) {
-            window.location.href = "/"
-        } else {
-            window.location.href = "/admin-dashboard"
+            navigate("/");
         }
-    }, [token])
+        
+    }, [token, navigate]);
 
     if (isLoading) {
         return (
@@ -48,11 +49,11 @@ const HomePage = () => {
 
     return (
         <div>
-            <h1 className=' text-[33px] font-semibold mb-10  text-white ' >Dashboard</h1>
+            <h1 className='text-[33px] font-semibold mb-10 text-white'>Dashboard</h1>
             <StatsCard statisticsData={statisticsData} />
             <RecentActivities resentOrder={resentOrder} />
         </div>
     )
 }
 
-export default HomePage
+export default HomePage;
