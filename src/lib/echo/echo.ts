@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
-import axios, { type AxiosResponse } from "axios";
+
 
 console.log("=== DEBUG 1: echo.ts file is loaded successfully! ===");
 
