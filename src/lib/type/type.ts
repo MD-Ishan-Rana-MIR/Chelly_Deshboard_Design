@@ -149,3 +149,13 @@ export interface NotificationItem {
   created_at: string;
   updated_at: string;
 }
+export interface CategoryType {
+   category: {
+    id: number;
+    name: string;
+    image: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+  };
+}

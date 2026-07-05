@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { FiDownload, FiTrash2, FiX, FiPlus, FiEye } from 'react-icons/fi';
 import UploadFoodForm from '../../components/ui/FoodUpload';
-import { useGetFoodsQuery } from '../../api/food/foodApi';
+import { useDeleteFoodMutation, useGetFoodsQuery } from '../../api/food/foodApi';
 import Pagination from '../../components/pagination/Pagination';
 import type { FoodItem } from '../../lib/type/type';
 import FoodDetailsModal from './FoodDetailsModal';
 import FoodSkeleton from '../../components/skeleton/FoodSkeleton';
+import ConfirmModal from '../../lib/alert/ConfirmModal';
+import { errorMessage } from '../../lib/msg/errorMsg';
+import toast from 'react-hot-toast';
 
 export default function Food() {
     const [page, setPage] = useState<number>(1);
@@ -28,11 +31,7 @@ export default function Food() {
     const lastPage = foodResponse?.data?.last_page || 1;
     const totalItems = foodResponse?.data?.total || 0;
 
-    const handleDelete = async (id: number) => {
-        if (confirm("Are you sure you want to delete this food item?")) {
-            console.log(`Delete food item ID: ${id}`);
-        }
-    };
+
 
     const handleExportCSV = () => {
         if (foodList.length === 0) return;
@@ -56,6 +55,42 @@ export default function Food() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+
+    // ============================================== Food Delete api ===========================================
+
+    const [deletePopUp, setDeletePopUp] = useState(false);
+    const [deleteId, setDeleteId] = useState<number | null>(null);
+
+    const openDeleteModal = (id: number) => {
+        setDeleteId(id);
+        setDeletePopUp(true);
+    }
+
+    const closeDeletePopUp = () => {
+        setDeletePopUp(false);
+        setDeleteId(null);
+    };
+
+
+
+    const [deleteFood, { isLoading: deleteLoading }] = useDeleteFoodMutation();
+
+    const handleDeleteFood = async () => {
+        try {
+            const res = await deleteFood(deleteId).unwrap();
+            if (res) {
+                closeDeletePopUp();
+                setDeleteId(null);
+                setSelectedFood(null);
+                setPage(1);
+                return toast.success(res?.message)
+            }
+        } catch (error) {
+            console.error("Error deleting food item:", error);
+            return errorMessage(error);
+        }
     };
 
     return (
@@ -113,7 +148,7 @@ export default function Food() {
 
             {/* CONTENT ENGINE */}
             {isLoading ? (
-                <FoodSkeleton/>
+                <FoodSkeleton />
             ) : error ? (
                 <div className="bg-rose-50 border border-rose-100 rounded-3xl p-10 text-center text-rose-600">
                     Failed to sync server records.
@@ -189,7 +224,7 @@ export default function Food() {
                                                     </button>
                                                     {/* <button className="w-9 h-9 cursor-pointer flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition">✏️</button> */}
                                                     <button
-                                                        onClick={() => handleDelete(food.id)}
+                                                        onClick={() => openDeleteModal(food.id)}
                                                         className="w-9 h-9 flex cursor-pointer items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition"
                                                     >
                                                         <FiTrash2 size={16} />
@@ -226,7 +261,7 @@ export default function Food() {
                         >
                             <FiX size={22} />
                         </button>
-                        <UploadFoodForm />
+                        <UploadFoodForm openModal={setOpenModal} />
                     </div>
                 </div>
             )}
@@ -235,6 +270,18 @@ export default function Food() {
             <FoodDetailsModal
                 food={selectedFood}
                 onClose={() => setSelectedFood(null)}
+            />
+            {/* Modal for delete confirmation */}
+
+            <ConfirmModal
+                open={deletePopUp}
+                title="Are you sure you want to delete?"
+                description="Once deleted, this blog cannot be recovered."
+                confirmText={deleteLoading ? 'Deleting...' : "Delete"}
+                cancelText="Cancel"
+                onConfirm={handleDeleteFood}
+                onCancel={closeDeletePopUp}
+                loading={deleteLoading}
             />
         </section>
     );

@@ -36,7 +36,7 @@ const HomePage = () => {
         if (!token) {
             navigate("/");
         }
-        
+
     }, [token, navigate]);
 
     if (isLoading) {
@@ -57,3 +57,9 @@ const HomePage = () => {
 }
 
 export default HomePage;
+
+// {   "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
+//    "title": "20% Off on AC Servicing! 🛠️",   
+// "body": "Get a special discount on our popular AC cleaning service for a limited time. Book now!",
+   
+// "data": {     "url": "/(customer-tab)/services/105",     "service_id": 105,     "type": "service_promotion"   } }

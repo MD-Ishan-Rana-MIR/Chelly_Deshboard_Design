@@ -6,6 +6,11 @@ import {
     FiUpload,
     FiX,
 } from 'react-icons/fi';
+import { useAllCategoryWithOutPaginationQuery } from '../../api/category/categoryApi';
+import type { CategoryType } from '../../page/blog-management/BlogEditModal';
+import { useUploadFoodMutation } from '../../api/food/foodApi';
+import toast from 'react-hot-toast';
+import { errorMessage } from '../../lib/msg/errorMsg';
 
 type FoodItem = {
     id: number;
@@ -13,7 +18,7 @@ type FoodItem = {
     category: string;
     price: number;
     stock: number;
-    images: string[];
+    image: File | null; // Changed from array to a single File or null
 };
 
 type FormType = {
@@ -21,29 +26,33 @@ type FormType = {
     category: string;
     price: string;
     stock: string;
-    images: string[];
-    type : string;
+    image: File | null; // Track single File object instead of array
+    type: string;
+    description: string;
 };
 
+export default function UploadFoodForm({ openModal }: { openModal: (open: boolean) => void }) {
 
-export default function UploadFoodForm() {
+    // ============================================ Category Api ======================================================
+    const { data } = useAllCategoryWithOutPaginationQuery({});
+    const categoryData: CategoryType[] = data?.data?.data;
 
     const [foods, setFoods] = useState<FoodItem[]>([]);
-
-    console.log(foods)
-
     const [form, setForm] = useState<FormType>({
         name: '',
         category: '',
         price: '',
         stock: '',
-        type : '',
-        images: [],
+        type: '',
+        description: '',
+        image: null, // Initialized as null for a single raw file
     });
+
+    const [uploadFood, { isLoading }] = useUploadFoodMutation();
 
     // HANDLE INPUT
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         setForm({
             ...form,
@@ -51,184 +60,131 @@ export default function UploadFoodForm() {
         });
     };
 
-    // MULTIPLE IMAGE UPLOAD
-    const handleImageUpload = (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    // SINGLE RAW FILE UPLOAD (NO ARRAY, NO BASE64)
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
+        if (!files || files.length === 0) return;
 
-        if (!files) return;
-
-        Array.from(files).forEach((file) => {
-
-            const reader = new FileReader();
-
-            reader.onloadend = () => {
-
-                setForm((prev) => ({
-                    ...prev,
-                    images: [
-                        ...prev.images,
-                        reader.result as string,
-                    ],
-                }));
-
-            };
-
-            reader.readAsDataURL(file);
-
-        });
-    };
-
-    // REMOVE IMAGE
-    const removeImage = (index: number) => {
-
-        const updatedImages = [...form.images];
-
-        updatedImages.splice(index, 1);
-
+        // Take only the first file selected
         setForm((prev) => ({
             ...prev,
-            images: updatedImages,
+            image: files[0],
         }));
     };
 
-    // ADD FOOD
-    const handleAddFood = () => {
+    // REMOVE SINGLE IMAGE
+    const removeImage = () => {
+        setForm((prev) => ({
+            ...prev,
+            image: null,
+        }));
+    };
 
-        if (
-            !form.name ||
-            !form.category ||
-            !form.price ||
-            !form.stock
-        ) {
-            alert('Please fill all fields');
+    // ADD & UPLOAD FOOD
+    const handleAddFood = async () => {
+        // 1. Validation First
+        if (!form.name || !form.category || !form.price || !form.stock) {
+            alert('Please fill all required fields');
             return;
         }
 
-        const newFood: FoodItem = {
-            id: Date.now(),
-            name: form.name,
-            category: form.category,
-            price: Number(form.price),
-            stock: Number(form.stock),
-            images: form.images,
-        };
+        // 2. Prepare FormData payload for backend transmission
+        const formData = new FormData();
+        formData.append('name', form.name);
+        formData.append('category_id', form.category);
+        formData.append('description', form.description || '');
+        formData.append('price', form.price);
+        formData.append('stock', form.stock);
+        formData.append('type', form.type);
 
-        setFoods((prev) => [newFood, ...prev]);
+        // Append the single native binary File chunk directly to FormData if it exists
+        if (form.image) {
+            formData.append('image', form.image);
+        }
 
-        console.log(newFood);
+        try {
+            // 3. Trigger the mutation API
+            const res = await uploadFood(formData).unwrap();
 
-        // RESET FORM
-        setForm({
-            name: '',
-            category: '',
-            price: '',
-            stock: '',
-            images: [],
-            type: '',
-        });
+            // 4. Update UI local state
+            const newFood: FoodItem = {
+                id: Date.now(),
+                name: form.name,
+                category: form.category,
+                price: Number(form.price),
+                stock: Number(form.stock),
+                image: form.image,
+            };
+            setFoods((prev) => [newFood, ...prev]);
+
+            // 5. RESET FORM
+            setForm({
+                name: '',
+                category: '',
+                price: '',
+                stock: '',
+                image: null,
+                type: '',
+                description: '',
+            });
+            openModal(false);
+
+            return toast.success(res?.message || 'Food uploaded successfully!');
+        } catch (error) {
+            return errorMessage(error);
+        }
     };
 
     return (
-        <div className=" p-6">
-
-
-
-            {/* UPLOAD FORM */}
+        <div className="p-6">
             <div className="bg-white rounded-3xl shadow-lg p-6 h-fit">
 
                 {/* HEADER */}
                 <div className="flex items-center gap-3 mb-6">
-
                     <div className="w-12 h-12 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center">
                         <FiPlus size={22} />
                     </div>
-
                     <div>
-                        <h2 className="text-xl font-bold">
-                            Upload Food
-                        </h2>
-
-                        <p className="text-sm text-gray-500">
-                            Add new food item
-                        </p>
+                        <h2 className="text-xl font-bold">Upload Food</h2>
+                        <p className="text-sm text-gray-500">Add new food item</p>
                     </div>
-
                 </div>
 
                 <div className="space-y-5">
-
                     {/* IMAGE */}
                     <div>
+                        <label className="text-sm font-medium text-gray-600 block mb-2">Food Image</label>
 
-                        <label className="text-sm font-medium text-gray-600 block mb-2">
-                            Food Images
-                        </label>
-
-                        <label className="border-2 border-dashed border-gray-300 rounded-2xl h-44 flex flex-col items-center justify-center cursor-pointer hover:border-green-500 transition bg-gray-50 overflow-hidden">
-
-                            <FiUpload className="text-4xl text-gray-400 mb-2" />
-
-                            <p className="text-sm text-gray-500">
-                                Upload Multiple Images
-                            </p>
-
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={handleImageUpload}
-                                className="hidden"
-                            />
-
-                        </label>
-
-                        {/* IMAGE PREVIEW */}
-                        {form.images.length > 0 && (
-
-                            <div className="grid grid-cols-3 gap-3 mt-4">
-
-                                {form.images.map((img, index) => (
-
-                                    <div
-                                        key={index}
-                                        className="relative h-24 rounded-xl overflow-hidden"
-                                    >
-
-                                        <img
-                                            src={img}
-                                            alt="preview"
-                                            className="w-full h-full object-cover"
-                                        />
-
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                removeImage(index)
-                                            }
-                                            className="absolute top-1 cursor-pointer right-1 bg-red-500 text-white rounded-full p-1"
-                                        >
-                                            <FiX size={14} />
-                                        </button>
-
-                                    </div>
-
-                                ))}
-
+                        {/* Only show upload dropzone if no image is selected */}
+                        {!form.image ? (
+                            <label className="border-2 border-dashed border-gray-300 rounded-2xl h-44 flex flex-col items-center justify-center cursor-pointer hover:border-green-500 transition bg-gray-50 overflow-hidden">
+                                <FiUpload className="text-4xl text-gray-400 mb-2" />
+                                <p className="text-sm text-gray-500">Upload Food Image</p>
+                                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                            </label>
+                        ) : (
+                            /* SINGLE IMAGE PREVIEW USING OBJECT URL */
+                            <div className="relative h-44 w-full rounded-2xl overflow-hidden border">
+                                <img
+                                    src={URL.createObjectURL(form.image)}
+                                    alt="preview"
+                                    className="w-full h-full object-cover"
+                                    onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)} // Frees up browser memory leaks
+                                />
+                                <button
+                                    type="button"
+                                    onClick={removeImage}
+                                    className="absolute top-3 cursor-pointer right-3 bg-red-500 text-white rounded-full p-1.5 shadow"
+                                >
+                                    <FiX size={18} />
+                                </button>
                             </div>
-
                         )}
-
                     </div>
 
                     {/* NAME */}
                     <div>
-
-                        <label className="text-sm font-medium text-gray-600 block mb-2">
-                            Food Name
-                        </label>
-
+                        <label className="text-sm font-medium text-gray-600 block mb-2">Food Name</label>
                         <input
                             type="text"
                             name="name"
@@ -237,53 +193,42 @@ export default function UploadFoodForm() {
                             placeholder="Food name"
                             className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                         />
-
                     </div>
 
                     {/* CATEGORY */}
                     <div>
-
-                        <label className="text-sm font-medium text-gray-600 block mb-2">
-                            Category
-                        </label>
-
+                        <label className="text-sm font-medium text-gray-600 block mb-2">Category</label>
                         <select
                             name="category"
                             value={form.category}
                             onChange={handleChange}
                             className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                         >
-                            <option value="">
-                                Select Category
-                            </option>
-
-                            <option value="Burger">
-                                Burger
-                            </option>
-
-                            <option value="Pizza">
-                                Pizza
-                            </option>
-
-                            <option value="Pasta">
-                                Pasta
-                            </option>
-
-                            <option value="Drinks">
-                                Drinks
-                            </option>
-
+                            <option value="">Select Category</option>
+                            {categoryData && categoryData.map((category, index) => (
+                                <option key={index} value={category?.id}>
+                                    {category?.name}
+                                </option>
+                            ))}
                         </select>
+                    </div>
 
+                    {/* DESCRIPTION */}
+                    <div>
+                        <label className="text-sm font-medium text-gray-600 block mb-2">Description</label>
+                        <textarea
+                            name="description"
+                            value={form.description}
+                            onChange={handleChange}
+                            placeholder="Enter food details or ingredients description..."
+                            rows={3}
+                            className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                        />
                     </div>
 
                     {/* PRICE */}
                     <div>
-
-                        <label className="text-sm font-medium text-gray-600 block mb-2">
-                            Price
-                        </label>
-
+                        <label className="text-sm font-medium text-gray-600 block mb-2">Price</label>
                         <input
                             type="number"
                             name="price"
@@ -292,33 +237,24 @@ export default function UploadFoodForm() {
                             placeholder="Food price"
                             className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                         />
-
                     </div>
-                    {/* Food Type */}
+
+                    {/* FOOD TYPE */}
                     <div>
-
-                        <label className="text-sm font-medium text-gray-600 block mb-2">
-                            Food Type
-                        </label>
-
+                        <label className="text-sm font-medium text-gray-600 block mb-2">Food Type</label>
                         <input
                             type="text"
                             name="type"
                             value={form.type}
                             onChange={handleChange}
-                            placeholder="Food type"
+                            placeholder="Food type (e.g. Spicy, Vegan)"
                             className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                         />
-
                     </div>
 
                     {/* STOCK */}
                     <div>
-
-                        <label className="text-sm font-medium text-gray-600 block mb-2">
-                            Stock
-                        </label>
-
+                        <label className="text-sm font-medium text-gray-600 block mb-2">Stock</label>
                         <input
                             type="number"
                             name="stock"
@@ -327,24 +263,18 @@ export default function UploadFoodForm() {
                             placeholder="Available stock"
                             className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                         />
-
                     </div>
 
                     {/* BUTTON */}
                     <button
                         onClick={handleAddFood}
-                        className="w-full btnColor cursor-pointer bg-[#207F36] hover:bg-green-700 text-white py-3 rounded-2xl font-semibold transition"
+                        disabled={isLoading}
+                        className="w-full cursor-pointer bg-[#207F36] hover:bg-green-700 text-white py-3 rounded-2xl font-semibold transition disabled:opacity-50"
                     >
-                        Upload Food
+                        {isLoading ? 'Uploading...' : 'Upload Food'}
                     </button>
-
                 </div>
-
             </div>
-
-
-
         </div>
-
     );
 }

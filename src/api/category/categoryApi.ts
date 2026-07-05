@@ -32,6 +32,12 @@ export const categoryApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Category"],
     }),
+    allCategoryWithOutPagination: builder.query({
+      query: () => ({
+        url: "/categories",
+      }),
+      providesTags: ["Category"],
+    }),
   }),
 });
 
@@ -40,4 +46,5 @@ export const {
   usePostCategoryMutation,
   useUpdateCateotgryMutation,
   useDeleteCategoryMutation,
+  useAllCategoryWithOutPaginationQuery,
 } = categoryApi;
