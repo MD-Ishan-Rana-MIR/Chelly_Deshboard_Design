@@ -38,6 +38,7 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
     const categoryData: CategoryType[] = data?.data?.data;
 
     const [foods, setFoods] = useState<FoodItem[]>([]);
+    console.log("foods", foods);
     const [form, setForm] = useState<FormType>({
         name: '',
         category: '',
