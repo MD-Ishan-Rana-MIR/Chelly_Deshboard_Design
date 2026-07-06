@@ -57,6 +57,7 @@ export default function BlogEditModal({
         const blog = data?.data;
 
         if (blog) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setForm({
                 title: blog.title || "",
                 category: String(blog.category_id || ""),
@@ -153,7 +154,7 @@ export default function BlogEditModal({
                 className="w-full rounded-xl border border-[#207F36] p-3 focus:outline-none"
             >
                 <option value="">Select category</option>
-                {categoryData.map((category) => (
+                {categoryData.map((category:CategoryType) => (
                     <option key={category.id} value={category.id}>
                         {category.name}
                     </option>

@@ -118,6 +118,7 @@ export interface Category {
 }
 
 export interface FoodItem {
+  type: string;
   id: number;
   category_id: number;
   name: string;

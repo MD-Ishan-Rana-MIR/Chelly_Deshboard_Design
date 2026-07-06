@@ -1,60 +1,95 @@
-'use client';
-
-import { useState } from 'react';
-import {
-    FiPlus,
-    FiUpload,
-    FiX,
-} from 'react-icons/fi';
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useState, useEffect } from 'react';
+import { FiUpload, FiX } from 'react-icons/fi';
+import { MdEdit } from 'react-icons/md';
 import { useAllCategoryWithOutPaginationQuery } from '../../api/category/categoryApi';
 import type { CategoryType } from '../../page/blog-management/BlogEditModal';
-import { useUploadFoodMutation } from '../../api/food/foodApi';
 import toast from 'react-hot-toast';
 import { errorMessage } from '../../lib/msg/errorMsg';
+import { useFoodUpdateMutation } from '../../api/food/foodApi';
 
-type FoodItem = {
-    id: number;
-    name: string;
-    category: string;
-    price: number;
-    stock: number;
-    image: File | null; // Changed from array to a single File or null
-};
+// Standard React imports for the WYSIWYG Editor
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 type FormType = {
+    id: string;
     name: string;
     category: string;
     price: string;
     stock: string;
-    image: File | null; // Track single File object instead of array
+    image: File | string | null;
     type: string;
     description: string;
 };
 
-export default function UploadFoodForm({ openModal }: { openModal: (open: boolean) => void }) {
+interface EditFormProps {
+    setOpenEditModal: (open: boolean) => void;
+    editData: any | null; // Set to any to handle flexible backend formats smoothly
+}
 
+// Configuration toolbar options for the HTML editor
+const quillModules = {
+    toolbar: [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'blockquote'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['clean']
+    ],
+};
 
+const quillFormats = [
+    'header',
+    'bold', 'italic', 'underline', 'blockquote',
+    'list', 'bullet'
+];
+
+export default function EditForm({ setOpenEditModal, editData }: EditFormProps) {
     // ============================================ Category Api ======================================================
     const { data } = useAllCategoryWithOutPaginationQuery({});
     const categoryData: CategoryType[] = data?.data?.data;
 
-    const [foods, setFoods] = useState<FoodItem[]>([]);
-    console.log("foods", foods);
+    console.log("editData", editData);
+
     const [form, setForm] = useState<FormType>({
+        id: '',
         name: '',
         category: '',
         price: '',
         stock: '',
         type: '',
         description: '',
-        image: null, // Initialized as null for a single raw file
+        image: null,
     });
 
-    const [uploadFood, { isLoading }] = useUploadFoodMutation();
+    const [foodUpdate, { isLoading }] = useFoodUpdateMutation();
 
-    // HANDLE INPUT
+    // POPULATE FORM WITH DEFAULT VALUES WHEN editData ARRIVES
+    useEffect(() => {
+        if (editData) {
+            // Checks for direct fields, nested object '_id', or nested object 'id'
+            const currentCategoryId =
+                editData.category_id ||
+                editData.category?._id ||
+                editData.category?.id ||
+                (typeof editData.category === 'string' ? editData.category : '');
+
+            setForm({
+                id: String(editData._id || editData.id || ''),
+                name: editData.name || '',
+                category: String(currentCategoryId), // This string matches the value inside <option value="...">
+                price: editData.price ? String(editData.price) : '',
+                stock: editData.stock ? String(editData.stock) : '',
+                type: editData.type || '',
+                description: editData.description || '',
+                image: editData.image || null,
+            });
+        }
+    }, [editData]);
+
+    // HANDLE TEXT INPUT CHANGES
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         setForm({
             ...form,
@@ -62,19 +97,26 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
         });
     };
 
-    // SINGLE RAW FILE UPLOAD (NO ARRAY, NO BASE64)
+    // HANDLE RICH TEXT EDITOR CHANGES
+    const handleDescriptionChange = (content: string) => {
+        setForm((prev) => ({
+            ...prev,
+            description: content
+        }));
+    };
+
+    // FILE UPLOAD HANDLER
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
 
-        // Take only the first file selected
         setForm((prev) => ({
             ...prev,
             image: files[0],
         }));
     };
 
-    // REMOVE SINGLE IMAGE
+    // REMOVE IMAGE
     const removeImage = () => {
         setForm((prev) => ({
             ...prev,
@@ -82,59 +124,44 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
         }));
     };
 
-    // ADD & UPLOAD FOOD
-    const handleAddFood = async () => {
-        // 1. Validation First
+    // SUBMIT UPDATE REQUEST
+    const handleUpdateFood = async () => {
         if (!form.name || !form.category || !form.price || !form.stock) {
-            alert('Please fill all required fields');
+            toast.error('Please fill all required fields');
             return;
         }
 
-        // 2. Prepare FormData payload for backend transmission
         const formData = new FormData();
         formData.append('name', form.name);
-        formData.append('category_id', form.category);
+        formData.append('category_id', form.category); // Sends selected category string _id to payload
         formData.append('description', form.description || '');
         formData.append('price', form.price);
         formData.append('stock', form.stock);
         formData.append('type', form.type);
 
-        // Append the single native binary File chunk directly to FormData if it exists
-        if (form.image) {
+        if (form.image instanceof File) {
             formData.append('image', form.image);
         }
 
+        const recordId = form.id || editData?._id || editData?.id;
+
         try {
-            // 3. Trigger the mutation API
-            const res = await uploadFood(formData).unwrap();
-
-            // 4. Update UI local state
-            const newFood: FoodItem = {
-                id: Date.now(),
-                name: form.name,
-                category: form.category,
-                price: Number(form.price),
-                stock: Number(form.stock),
-                image: form.image,
-            };
-            setFoods((prev) => [newFood, ...prev]);
-
-            // 5. RESET FORM
-            setForm({
-                name: '',
-                category: '',
-                price: '',
-                stock: '',
-                image: null,
-                type: '',
-                description: '',
-            });
-            openModal(false);
-
-            return toast.success(res?.message || 'Food uploaded successfully!');
+            await foodUpdate({ id: recordId,formData }).unwrap();
+            toast.success('Food item updated successfully!');
+            setOpenEditModal(false);
+            return;
         } catch (error) {
-            return errorMessage(error);
+            console.log(error)
+            errorMessage(error);
         }
+    };
+
+    const getImagePreviewSrc = () => {
+        if (!form.image) return '';
+        if (form.image instanceof File) {
+            return URL.createObjectURL(form.image);
+        }
+        return form.image;
     };
 
     return (
@@ -143,21 +170,20 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
 
                 {/* HEADER */}
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center">
-                        <FiPlus size={22} />
+                    <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                        <MdEdit size={22} />
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold">Upload Food</h2>
-                        <p className="text-sm text-gray-500">Add new food item</p>
+                        <h2 className="text-xl font-bold">Update Food Details</h2>
+                        <p className="text-sm text-gray-500">Modify existing product configurations</p>
                     </div>
                 </div>
 
                 <div className="space-y-5">
-                    {/* IMAGE */}
+                    {/* IMAGE SECTION */}
                     <div>
                         <label className="text-sm font-medium text-gray-600 block mb-2">Food Image</label>
 
-                        {/* Only show upload dropzone if no image is selected */}
                         {!form.image ? (
                             <label className="border-2 border-dashed border-gray-300 rounded-2xl h-44 flex flex-col items-center justify-center cursor-pointer hover:border-green-500 transition bg-gray-50 overflow-hidden">
                                 <FiUpload className="text-4xl text-gray-400 mb-2" />
@@ -165,18 +191,28 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
                                 <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                             </label>
                         ) : (
-                            /* SINGLE IMAGE PREVIEW USING OBJECT URL */
-                            <div className="relative h-44 w-full rounded-2xl overflow-hidden border">
+                            <div className="relative h-44 w-full rounded-2xl overflow-hidden border group">
                                 <img
-                                    src={URL.createObjectURL(form.image)}
+                                    src={getImagePreviewSrc()}
                                     alt="preview"
                                     className="w-full h-full object-cover"
-                                    onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)} // Frees up browser memory leaks
+                                    onLoad={(e) => {
+                                        if (form.image instanceof File) {
+                                            URL.revokeObjectURL((e.target as HTMLImageElement).src);
+                                        }
+                                    }}
                                 />
+
+                                <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center text-white cursor-pointer">
+                                    <FiUpload className="text-2xl mb-1" />
+                                    <span className="text-xs font-medium">Change Image</span>
+                                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                                </label>
+
                                 <button
                                     type="button"
                                     onClick={removeImage}
-                                    className="absolute top-3 cursor-pointer right-3 bg-red-500 text-white rounded-full p-1.5 shadow"
+                                    className="absolute top-3 right-3 z-10 bg-red-500 text-white rounded-full p-1.5 shadow hover:bg-red-600 transition cursor-pointer"
                                 >
                                     <FiX size={18} />
                                 </button>
@@ -197,7 +233,7 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
                         />
                     </div>
 
-                    {/* CATEGORY */}
+                    {/* CATEGORY SELECT DROPDOWN */}
                     <div>
                         <label className="text-sm font-medium text-gray-600 block mb-2">Category</label>
                         <select
@@ -207,25 +243,30 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
                             className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                         >
                             <option value="">Select Category</option>
-                            {categoryData && categoryData.map((category, index) => (
-                                <option key={index} value={category?.id}>
-                                    {category?.name}
-                                </option>
-                            ))}
+                            {categoryData?.map((category: any, index) => {
+                                const catId = category?._id || category?.id;
+                                return (
+                                    <option key={index} value={String(catId)}>
+                                        {category?.name}
+                                    </option>
+                                );
+                            })}
                         </select>
                     </div>
 
-                    {/* DESCRIPTION */}
-                    <div>
+                    {/* DESCRIPTION (HTML RICH TEXT EDITOR) */}
+                    <div className="flex flex-col">
                         <label className="text-sm font-medium text-gray-600 block mb-2">Description</label>
-                        <textarea
-                            name="description"
-                            value={form.description}
-                            onChange={handleChange}
-                            placeholder="Enter food details or ingredients description..."
-                            rows={3}
-                            className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500 resize-none"
-                        />
+                        <div className="[&&_.ql-toolbar]:rounded-t-2xl [&&_.ql-toolbar]:border-gray-200 [&&_.ql-container]:rounded-b-2xl [&&_.ql-container]:border-gray-200 [&&_.ql-container]:min-h-[150px] [&&_.ql-editor]:text-base">
+                            <ReactQuill
+                                theme="snow"
+                                value={form.description}
+                                onChange={handleDescriptionChange}
+                                modules={quillModules}
+                                formats={quillFormats}
+                                placeholder="Enter structural product data or recipes..."
+                            />
+                        </div>
                     </div>
 
                     {/* PRICE */}
@@ -267,13 +308,13 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
                         />
                     </div>
 
-                    {/* BUTTON */}
+                    {/* SAVE BUTTON */}
                     <button
-                        onClick={handleAddFood}
+                        onClick={handleUpdateFood}
                         disabled={isLoading}
                         className="w-full cursor-pointer bg-[#207F36] hover:bg-green-700 text-white py-3 rounded-2xl font-semibold transition disabled:opacity-50"
                     >
-                        {isLoading ? 'Uploading...' : 'Upload Food'}
+                        {isLoading ? 'Saving Changes...' : 'Save Changes'}
                     </button>
                 </div>
             </div>

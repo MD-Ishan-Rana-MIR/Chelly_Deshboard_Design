@@ -9,6 +9,8 @@ import FoodSkeleton from '../../components/skeleton/FoodSkeleton';
 import ConfirmModal from '../../lib/alert/ConfirmModal';
 import { errorMessage } from '../../lib/msg/errorMsg';
 import toast from 'react-hot-toast';
+import { FaEdit } from 'react-icons/fa';
+import EditForm from './EditFrom';
 
 export default function Food() {
     const [page, setPage] = useState<number>(1);
@@ -92,6 +94,25 @@ export default function Food() {
             return errorMessage(error);
         }
     };
+
+    // ================================================ Product Edit Related ==========================================
+
+    const [editData, setEditData] = useState<FoodItem | null>(null);
+    const [openEditModal, setOpenEditModal] = useState<boolean>(false);
+
+    const handleEdit = (item: FoodItem) => {
+        setEditData(item);
+        setOpenEditModal(!openEditModal)
+    }
+
+
+
+
+
+
+
+
+
 
     return (
         <section className="min-h-screen bg-gray-50 p-6 md:p-10">
@@ -229,6 +250,12 @@ export default function Food() {
                                                     >
                                                         <FiTrash2 size={16} />
                                                     </button>
+                                                    <button
+                                                        onClick={() => (handleEdit(food))}
+                                                        className="w-9 h-9 cursor-pointer flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+                                                    >
+                                                        <FaEdit size={16} />
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -283,6 +310,34 @@ export default function Food() {
                 onCancel={closeDeletePopUp}
                 loading={deleteLoading}
             />
+
+
+
+
+
+            {/* Product Edit MOdal  */}
+
+
+            {/* ADD FOOD MODAL */}
+            {openEditModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white w-[90%] max-w-2xl rounded-2xl p-6 relative h-[90vh] overflow-y-auto shadow-2xl">
+                        <button
+                            onClick={() => setOpenEditModal(false)}
+                            className="absolute top-4 cursor-pointer right-4 text-gray-500 hover:text-gray-800 transition"
+                        >
+                            <FiX size={22} />
+                        </button>
+                        <EditForm setOpenEditModal={setOpenEditModal} editData={editData} />
+                    </div>
+                </div>
+            )}
+
+
+
+
+
+
         </section>
     );
 }

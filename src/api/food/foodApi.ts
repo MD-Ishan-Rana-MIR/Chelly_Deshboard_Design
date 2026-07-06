@@ -10,7 +10,7 @@ export const foodApi = baseApi.injectEndpoints({
         if (params?.page) searchParams.append("page", params.page.toString());
         if (params?.per_page)
           searchParams.append("per_page", params.per_page.toString());
-        console.log("params?.per_page",params?.per_page);
+        console.log("params?.per_page", params?.per_page);
 
         // 2. Safely Loop through & format Nested Filters
         if (params?.search)
@@ -32,7 +32,7 @@ export const foodApi = baseApi.injectEndpoints({
       },
       providesTags: ["Food"],
     }),
-    uploadFood : builder.mutation({
+    uploadFood: builder.mutation({
       query: (formData) => ({
         url: "/foods",
         method: "POST",
@@ -47,9 +47,22 @@ export const foodApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Food"],
     }),
+    foodUpdate: builder.mutation({
+      query: ({ id, formData }) => ({
+        url: `/foods/${id}`,
+        method: "PUT",
+        body: formData,
+      }),
+      invalidatesTags: ["Food"],
+    }),
   }),
   overrideExisting: false,
 });
 
 // 3. Export the auto-generated query hook
-export const { useGetFoodsQuery,useUploadFoodMutation,useDeleteFoodMutation } = foodApi;
+export const {
+  useGetFoodsQuery,
+  useUploadFoodMutation,
+  useDeleteFoodMutation,
+  useFoodUpdateMutation,
+} = foodApi;
