@@ -160,3 +160,12 @@ export interface CategoryType {
     updated_at: string;
   };
 }
+
+
+  export interface CollectionItem {
+      id: number;
+      name: string;
+      status: 'active' | 'inactive' | string; // Highly recommended to literal-type your statuses
+      created_at: string; // ISO 8601 Date String
+      updated_at: string; // ISO 8601 Date String
+  }

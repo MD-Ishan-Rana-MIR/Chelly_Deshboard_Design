@@ -5,9 +5,10 @@ import Category from "./Category";
 import Food from "./Food";
 import Offer from "./Offer";
 import Banner from "./Banner";
+import Collection from "./Collection";
 
 export default function FoodCategoryManagement() {
-    const [openPage, setOpenPage] = useState<'Food' | 'Category' | 'Offer'|'Banner'>('Food');
+    const [openPage, setOpenPage] = useState<'Food' | 'Category' | 'Offer'|'Banner'|'Collection'>('Food');
 
     return (
         <div className="p-6">
@@ -60,6 +61,16 @@ export default function FoodCategoryManagement() {
                 >
                     📢 Banner
                 </button>
+                <button
+                    onClick={() => setOpenPage('Collection')}
+                    className={`px-6 py-2 rounded-xl font-semibold cursor-pointer transition-all duration-200
+                    ${openPage === 'Collection'
+                            ? 'bg-[#207F36] text-white shadow-md'
+                            : 'text-gray-600 hover:bg-white'
+                        }`}
+                >
+                    📢 Collection
+                </button>
 
             </div>
 
@@ -69,6 +80,7 @@ export default function FoodCategoryManagement() {
                 {openPage === 'Food' && <Food />}
                 {openPage === 'Offer' && <Offer />}
                 {openPage === 'Banner' && <Banner />}
+                {openPage === 'Collection' &&  <Collection/> }
             </div>
 
         </div>
