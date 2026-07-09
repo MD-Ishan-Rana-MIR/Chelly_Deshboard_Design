@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Editor } from "primereact/editor";
-import { useAllCategoryQuery } from "../../api/category/categoryApi";
 import { usePostBlogMutation } from "../../api/blog/blogApi";
 import { errorMessage } from "../../lib/msg/errorMsg";
 import toast from "react-hot-toast";
 import ConfirmModal from "../../lib/alert/ConfirmModal";
+import { useGetAllCollectionQuery } from "../../api/collection/collectionApi";
+import type { CollectionItem } from "../../lib/type/type";
 
 type FormType = {
     title: string;
@@ -37,8 +38,14 @@ export default function BlogUpload({setOpenModal}:{setOpenModal:React.Dispatch<R
 
     const [openPopUpModal, setOpenPopUpModal] = useState(false);
 
-    const { data: categories } = useAllCategoryQuery(undefined);
-    const categoryData: CategoryType[] = categories?.data?.data || [];
+    const {data:collection} = useGetAllCollectionQuery({});
+
+    console.log("collection",collection?.data);
+
+    const collectionData : CollectionItem[] = collection?.data || [];
+
+    // const { data: categories } = useAllCategoryQuery(undefined);
+    // const categoryData: CategoryType[] = categories?.data?.data || [];
 
     const [createBlog, { isLoading }] = usePostBlogMutation();
 
@@ -175,7 +182,7 @@ export default function BlogUpload({setOpenModal}:{setOpenModal:React.Dispatch<R
                     className="w-full rounded-xl border border-[#207F36] p-3 focus:outline-none"
                 >
                     <option value="">Select category</option>
-                    {categoryData.map((category) => (
+                    {collectionData.map((category) => (
                         <option key={category.id} value={category.id}>
                             {category.name}
                         </option>

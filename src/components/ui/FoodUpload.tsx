@@ -242,7 +242,7 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
                     </div>
 
                     {/* FOOD TYPE */}
-                    <div>
+                    {/* <div>
                         <label className="text-sm font-medium text-gray-600 block mb-2">Food Type</label>
                         <input
                             type="text"
@@ -252,7 +252,7 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
                             placeholder="Food type (e.g. Spicy, Vegan)"
                             className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                         />
-                    </div>
+                    </div> */}
 
                     {/* STOCK */}
                     <div>
