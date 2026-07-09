@@ -283,7 +283,7 @@ export default function EditForm({ setOpenEditModal, editData }: EditFormProps) 
                     </div>
 
                     {/* FOOD TYPE */}
-                    <div>
+                    {/* <div>
                         <label className="text-sm font-medium text-gray-600 block mb-2">Food Type</label>
                         <input
                             type="text"
@@ -293,7 +293,7 @@ export default function EditForm({ setOpenEditModal, editData }: EditFormProps) 
                             placeholder="Food type (e.g. Spicy, Vegan)"
                             className="w-full border rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                         />
-                    </div>
+                    </div> */}
 
                     {/* STOCK */}
                     <div>
