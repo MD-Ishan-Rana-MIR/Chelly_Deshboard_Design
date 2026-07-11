@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import ConfirmModal from "../../lib/alert/ConfirmModal";
 import { useGetAllCollectionQuery } from "../../api/collection/collectionApi";
 import type { CollectionItem } from "../../lib/type/type";
+import { useAllCategoryQuery } from "../../api/category/categoryApi";
 
 type FormType = {
     title: string;
@@ -44,8 +45,10 @@ export default function BlogUpload({setOpenModal}:{setOpenModal:React.Dispatch<R
 
     const collectionData : CollectionItem[] = collection?.data || [];
 
-    // const { data: categories } = useAllCategoryQuery(undefined);
-    // const categoryData: CategoryType[] = categories?.data?.data || [];
+    const { data: categories } = useAllCategoryQuery(undefined);
+    const categoryData: CategoryType[] = categories?.data || [];
+
+    console.log("categoryData",categoryData)
 
     const [createBlog, { isLoading }] = usePostBlogMutation();
 

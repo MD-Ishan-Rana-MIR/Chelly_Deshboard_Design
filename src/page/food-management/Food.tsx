@@ -16,7 +16,6 @@ export default function Food() {
     const [page, setPage] = useState<number>(1);
     const [per_page, setPerPage] = useState(10);
     const [search, setSearch] = useState<string>('');
-    const [categoryFilter, setCategoryFilter] = useState<string>('All');
 
     const [openModal, setOpenModal] = useState(false);
     const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
@@ -25,7 +24,6 @@ export default function Food() {
         page,
         per_page,
         search: search || undefined,
-        category_id: categoryFilter === 'All' ? undefined : categoryFilter,
     });
 
     const foodList = foodResponse?.data?.data || [];
@@ -152,19 +150,6 @@ export default function Food() {
                     }}
                 />
 
-                <select
-                    className="border px-4 py-3 border-[#207F36] focus:outline-0 rounded-xl bg-white text-sm"
-                    value={categoryFilter}
-                    onChange={(e) => {
-                        setCategoryFilter(e.target.value);
-                        setPage(1);
-                    }}
-                >
-                    <option value="All">All Categories</option>
-                    <option value="2">Lunch</option>
-                    <option value="10">General Food</option>
-                    <option value="11">Food</option>
-                </select>
             </div>
 
             {/* CONTENT ENGINE */}
@@ -227,7 +212,7 @@ export default function Food() {
                                             </td>
                                             <td className="p-4 font-medium">{food.stock}</td>
                                             <td className="p-4">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${food.status === 'available'
+                                                <span className={`px-3 py-1 cursor-pointer rounded-full text-xs font-semibold ${food.status === 'available'
                                                     ? 'bg-green-100 text-green-600 capitalize'
                                                     : 'bg-red-100 text-red-500 capitalize'
                                                     }`}>
