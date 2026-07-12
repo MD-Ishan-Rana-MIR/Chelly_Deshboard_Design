@@ -117,6 +117,18 @@ export interface Category {
   updated_at: string;
 }
 
+export interface FoodVariantType {
+  id : number;
+  food_id : number;
+  shopify_variant_id : string;
+  title : string;
+  price : string;
+  stock : number;
+  option1 : string;
+  created_at : string;
+  updated_at : string;
+}
+
 export interface FoodItem {
   type: string;
   id: number;
@@ -130,6 +142,7 @@ export interface FoodItem {
   created_at: string;
   updated_at: string;
   category: Category; // Eager-loaded relational category model data layout
+  variants : FoodVariantType[]
 }
 
 export interface NotificationInnerData {

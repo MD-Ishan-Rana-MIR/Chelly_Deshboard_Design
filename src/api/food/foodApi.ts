@@ -1,33 +1,45 @@
 import { baseApi } from "../../router/base-api/baseApi";
 
+// category,variants,variantsCounts
+
 export const foodApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getFoods: builder.query({
-      query: (params) => {
+      query: (params = {}) => {
         const searchParams = new URLSearchParams();
 
-        searchParams.append("include", "category");
-        if (params?.page) searchParams.append("page", params.page.toString());
-        if (params?.per_page)
-          searchParams.append("per_page", params.per_page.toString());
-        console.log("params?.per_page", params?.per_page);
+        searchParams.append("include", "category,variants,variantsCount");
 
-        // 2. Safely Loop through & format Nested Filters
-        if (params?.search)
+        if (params.page) {
+          searchParams.append("page", String(params.page));
+        }
+
+        if (params.per_page) {
+          searchParams.append("per_page", String(params.per_page));
+        }
+
+        if (params.search) {
           searchParams.append("filter[search]", params.search);
-        if (params?.name) searchParams.append("filter[name]", params.name);
-        if (params?.category_id)
+        }
+
+        if (params.name) {
+          searchParams.append("filter[name]", params.name);
+        }
+
+        if (params.category_id) {
           searchParams.append(
             "filter[category_id]",
-            params.category_id.toString(),
+            String(params.category_id),
           );
-        if (params?.status)
+        }
+
+        if (params.status) {
           searchParams.append("filter[status]", params.status);
+        }
 
         return {
-          url: "/foods",
+          url: `/foods?${searchParams.toString()}`,
           method: "GET",
-          params: searchParams,
         };
       },
       providesTags: ["Food"],

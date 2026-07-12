@@ -31,6 +31,8 @@ export default function Food() {
     const lastPage = foodResponse?.data?.last_page || 1;
     const totalItems = foodResponse?.data?.total || 0;
 
+    console.log("foodList",foodList);
+
 
 
     const handleExportCSV = () => {
@@ -176,6 +178,7 @@ export default function Food() {
                                     <th className="p-4 font-semibold">Food</th>
                                     <th className="p-4 font-semibold">Category</th>
                                     <th className="p-4 font-semibold">Price</th>
+                                    <th className="p-4 font-semibold">Variant</th>
                                     <th className="p-4 font-semibold">Stock</th>
                                     <th className="p-4 font-semibold">Status</th>
                                     <th className="p-4 text-right font-semibold">Action</th>
@@ -209,6 +212,11 @@ export default function Food() {
                                             </td>
                                             <td className="p-4 font-semibold text-green-600">
                                                 ${parseFloat(food.price).toFixed(2)}
+                                            </td>
+                                            <td className="p-4 font-semibold text-green-600">
+                                                {
+                                                    food?.variants?.length
+                                                }
                                             </td>
                                             <td className="p-4 font-medium">{food.stock}</td>
                                             <td className="p-4">
