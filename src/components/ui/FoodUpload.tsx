@@ -272,7 +272,7 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
                         onClick={handleAddFood}
                         disabled={isLoading}
                         className="w-full cursor-pointer bg-[#207F36] hover:bg-green-700 text-white py-3 rounded-2xl font-semibold transition disabled:opacity-50"
-                    >npm run dev
+                    >
 
                         {isLoading ? 'Uploading...' : 'Upload Food'}
                     </button>
