@@ -1,4 +1,4 @@
-'use client';
+
 
 export default function FoodSkeleton() {
     // Generate an array of placeholder rows to mirror your default 'per_page' limit context

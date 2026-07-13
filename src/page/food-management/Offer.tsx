@@ -1,6 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-'use client';
-
 import { useEffect, useState } from "react";
 import { FiPlus, FiTrash2,FiX, FiEdit } from "react-icons/fi";
 import { Editor } from "primereact/editor";

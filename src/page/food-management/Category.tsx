@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, type ChangeEvent } from 'react';
 import { FiEdit, FiPlus, FiTrash2, FiX } from 'react-icons/fi';
