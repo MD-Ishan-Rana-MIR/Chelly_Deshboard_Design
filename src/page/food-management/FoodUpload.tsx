@@ -18,6 +18,7 @@ type FormType = {
     image: File | null;
     type: string;
     description: string;
+    galleryImages: File[];
 };
 
 type OptionValueType = {
@@ -68,7 +69,9 @@ export default function FoodUpload() {
         stock: '',
         type: '',
         description: '',
+        description: '',
         image: null,
+        galleryImages: [],
     });
 
     const [options, setOptions] = useState<OptionType[]>([]);
@@ -147,6 +150,19 @@ export default function FoodUpload() {
         setForm(prev => ({ ...prev, image: null }));
     };
 
+    const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
+        setForm(prev => ({ ...prev, galleryImages: [...prev.galleryImages, ...files] }));
+    };
+
+    const removeGalleryImage = (indexToRemove: number) => {
+        setForm(prev => ({
+            ...prev,
+            galleryImages: prev.galleryImages.filter((_, index) => index !== indexToRemove)
+        }));
+    };
+
     // --- Options Handlers ---
     const addOption = () => {
         if (options.length >= 3) {
@@ -221,6 +237,10 @@ export default function FoodUpload() {
             formData.append('image', form.image);
         }
 
+        form.galleryImages.forEach((img) => {
+            formData.append('images[]', img);
+        });
+
         // Append Options correctly to FormData
         // options[0][name]=Size, options[0][values][0]=Small, options[0][values][1]=Large
         const cleanOptions = options.map(opt => ({
@@ -252,7 +272,7 @@ export default function FoodUpload() {
             
             // RESET FORM
             setForm({
-                name: '', category: '', price: '', stock: '', image: null, type: '', description: '',
+                name: '', category: '', price: '', stock: '', image: null, type: '', description: '', galleryImages: []
             });
             setOptions([]);
             setVariants([]);
@@ -280,7 +300,7 @@ export default function FoodUpload() {
                 <div className="flex items-center gap-3">
                     <button 
                         onClick={() => {
-                            setForm({ name: '', category: '', price: '', stock: '', image: null, type: '', description: '' });
+                            setForm({ name: '', category: '', price: '', stock: '', image: null, type: '', description: '', galleryImages: [] });
                             setOptions([]); setVariants([]);
                         }}
                         className="px-5 py-2.5 rounded-xl font-semibold text-white/90 hover:text-white hover:bg-white/10 transition"
@@ -446,6 +466,30 @@ export default function FoodUpload() {
                                 </button>
                             </div>
                         )}
+                        
+                        {/* GALLERY IMAGES */}
+                        <div className="mt-6 border-t pt-5">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3">Additional Gallery Images</h4>
+                            
+                            {form.galleryImages.length > 0 && (
+                                <div className="grid grid-cols-2 gap-3 mb-4">
+                                    {form.galleryImages.map((img, index) => (
+                                        <div key={index} className="relative h-28 w-full rounded-xl overflow-hidden border">
+                                            <img src={URL.createObjectURL(img)} alt={`gallery-${index}`} className="w-full h-full object-cover" onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)} />
+                                            <button type="button" onClick={() => removeGalleryImage(index)} className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full p-1 shadow hover:bg-red-600 transition">
+                                                <FiX size={14} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            <label className="border-2 border-dashed border-gray-300 rounded-xl py-4 flex flex-col items-center justify-center cursor-pointer hover:border-green-500 transition bg-gray-50/50">
+                                <FiPlus className="text-2xl text-gray-400 mb-1" />
+                                <span className="text-xs font-medium text-gray-500">Add Gallery Images</span>
+                                <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="hidden" />
+                            </label>
+                        </div>
                     </div>
 
                     <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
