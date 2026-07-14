@@ -44,6 +44,13 @@ export const foodApi = baseApi.injectEndpoints({
       },
       providesTags: ["Food"],
     }),
+    getFoodById: builder.query({
+      query: (id) => ({
+        url: `/foods/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["Food"],
+    }),
     uploadFood: builder.mutation({
       query: (formData) => ({
         url: "/foods",
@@ -74,6 +81,7 @@ export const foodApi = baseApi.injectEndpoints({
 // 3. Export the auto-generated query hook
 export const {
   useGetFoodsQuery,
+  useGetFoodByIdQuery,
   useUploadFoodMutation,
   useDeleteFoodMutation,
   useFoodUpdateMutation,

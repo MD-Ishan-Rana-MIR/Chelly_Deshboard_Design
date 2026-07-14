@@ -67,6 +67,10 @@ export const router = createBrowserRouter([
         element: React.createElement(FoodUpload),
       },
       {
+        path: "food-edit/:id",
+        element: React.createElement(React.lazy(() => import('../page/food-management/FoodEdit'))),
+      },
+      {
         path: "settings/profile",
         element: React.createElement(PersonalInformation),
       },
