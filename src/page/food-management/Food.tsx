@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiDownload, FiTrash2, FiX, FiPlus, FiEye } from 'react-icons/fi';
+import { FiDownload, FiTrash2, FiPlus, FiEye } from 'react-icons/fi';
 import { useDeleteFoodMutation, useGetFoodsQuery } from '../../api/food/foodApi';
 import Pagination from '../../components/pagination/Pagination';
 import type { FoodItem } from '../../lib/type/type';

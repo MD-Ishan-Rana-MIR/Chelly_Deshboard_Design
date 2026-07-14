@@ -74,7 +74,6 @@ export default function FoodUpload() {
         stock: '',
         type: '',
         description: '',
-        description: '',
         image: null,
         galleryImages: [],
         collections: [],
@@ -369,7 +368,7 @@ export default function FoodUpload() {
                         </div>
                         
                         <div className="space-y-6 mb-6">
-                            {options.map((opt, index) => (
+                            {options.map((opt) => (
                                 <div key={opt.id} className="flex flex-col gap-4 p-5 border border-gray-200 rounded-2xl bg-gray-50/30">
                                     <div className="flex justify-between items-center">
                                         <label className="text-sm font-semibold text-gray-700 block">Option name</label>
