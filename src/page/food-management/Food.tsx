@@ -9,7 +9,6 @@ import ConfirmModal from '../../lib/alert/ConfirmModal';
 import { errorMessage } from '../../lib/msg/errorMsg';
 import toast from 'react-hot-toast';
 import { FaEdit } from 'react-icons/fa';
-import EditForm from './EditFrom';
 import { useNavigate } from 'react-router-dom';
 
 export default function Food() {
@@ -94,19 +93,11 @@ export default function Food() {
         }
     };
 
-    // ================================================ Product Edit Related ==========================================
-
-    const [editData, setEditData] = useState<FoodItem | null>(null);
-    const [openEditModal, setOpenEditModal] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const handleEdit = (item: FoodItem) => {
-        setEditData(item);
-        setOpenEditModal(!openEditModal)
+        navigate(`/admin-dashboard/food-edit/${item.id}`);
     }
-
-
-
-    const navigate = useNavigate();
 
 
 
@@ -293,29 +284,6 @@ export default function Food() {
                 onCancel={closeDeletePopUp}
                 loading={deleteLoading}
             />
-
-
-
-
-
-            {/* Product Edit MOdal  */}
-
-
-            {/* ADD FOOD MODAL */}
-            {openEditModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white w-[90%] max-w-2xl rounded-2xl p-6 relative h-[90vh] overflow-y-auto shadow-2xl">
-                        <button
-                            onClick={() => setOpenEditModal(false)}
-                            className="absolute top-4 cursor-pointer right-4 text-gray-500 hover:text-gray-800 transition"
-                        >
-                            <FiX size={22} />
-                        </button>
-                        <EditForm setOpenEditModal={setOpenEditModal} editData={editData} />
-                    </div>
-                </div>
-            )}
-
 
 
 
