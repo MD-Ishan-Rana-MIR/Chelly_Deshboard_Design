@@ -30,13 +30,22 @@ const LoginPage = () => {
             const res = await login(data).unwrap();
 
             if (res) {
+                // Check if user has admin role
+                const userRoles = res?.data?.user?.roles || [];
+                const isAdmin = userRoles.some((role: any) => role.name === 'admin');
+
+                if (!isAdmin) {
+                    toast.error("Access denied. Admin privileges required.");
+                    return; // Stop login process
+                }
+
                 console.log("Login successful:", res);
 
-                // ✅ Set cookie
-                localStorage.setItem("token", res?.data?.access_token)
+                // ✅ Set token
+                localStorage.setItem("token", res?.data?.access_token);
 
                 navigate("/admin-dashboard");
-                toast.success(res?.data?.message || "Login successful");
+                toast.success(res?.message || "Login successful");
                 reset();
             }
         } catch (error) {
