@@ -100,15 +100,15 @@ export default function FoodEdit() {
     useEffect(() => {
         if (foodData) {
             setForm({
-                name: foodData.name || '',
+                name: foodData.name || foodData.title || '',
                 category: String(foodData.category_id || ''),
-                price: foodData.price ? String(foodData.price) : '',
-                stock: foodData.stock ? String(foodData.stock) : '',
+                price: foodData.price !== undefined && foodData.price !== null ? String(foodData.price) : '',
+                stock: foodData.stock !== undefined && foodData.stock !== null ? String(foodData.stock) : '',
                 type: foodData.type || '',
                 description: foodData.description || '',
                 image: null, // file object
                 newGalleryImages: [],
-                collections: (foodData.collections || []).map((c: any) => String(c.id))
+                collections: Array.isArray(foodData.collections) ? foodData.collections.map((c: any) => String(c.id)) : []
             });
 
             setExistingMainImage(foodData.image || null);
