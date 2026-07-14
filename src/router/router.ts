@@ -18,12 +18,13 @@ import TermCondiction from "../page/settings/TermCondiction";
 import PrivacyPolicy from "../page/settings/PrivacyPolicy";
 import PaymentGuidePage from "../page/settings/PaymentGuide";
 import Notification from "../page/notification/Notification";
-import NotFound from './../components/ui/NotFoun';
+import NotFound from "./../components/ui/NotFoun";
+import FoodUpload from "../page/food-management/FoodUpload";
 
 export const router = createBrowserRouter([
-   {
-    path : "*",
-    element : React.createElement(NotFound),
+  {
+    path: "*",
+    element: React.createElement(NotFound),
   },
   {
     path: "/",
@@ -60,6 +61,10 @@ export const router = createBrowserRouter([
       {
         path: "food-management",
         element: React.createElement(FoodManagement),
+      },
+      {
+        path: "food-upload",
+        element: React.createElement(FoodUpload),
       },
       {
         path: "settings/profile",
@@ -99,5 +104,4 @@ export const router = createBrowserRouter([
       },
     ],
   },
- 
 ]);

@@ -7,7 +7,7 @@ import {
     FiX,
 } from 'react-icons/fi';
 import { useAllCategoryWithOutPaginationQuery } from '../../api/category/categoryApi';
-import type { CategoryType } from '../../page/blog-management/BlogEditModal';
+import type { CategoryType } from '../blog-management/BlogEditModal';
 import { useUploadFoodMutation } from '../../api/food/foodApi';
 import toast from 'react-hot-toast';
 import { errorMessage } from '../../lib/msg/errorMsg';
@@ -31,7 +31,7 @@ type FormType = {
     description: string;
 };
 
-export default function UploadFoodForm({ openModal }: { openModal: (open: boolean) => void }) {
+export default function FoodUpload() {
 
 
     // ============================================ Category Api ======================================================
@@ -129,7 +129,6 @@ export default function UploadFoodForm({ openModal }: { openModal: (open: boolea
                 type: '',
                 description: '',
             });
-            openModal(false);
 
             return toast.success(res?.message || 'Food uploaded successfully!');
         } catch (error) {

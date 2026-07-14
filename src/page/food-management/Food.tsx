@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { FiDownload, FiTrash2, FiX, FiPlus, FiEye } from 'react-icons/fi';
-import UploadFoodForm from '../../components/ui/FoodUpload';
 import { useDeleteFoodMutation, useGetFoodsQuery } from '../../api/food/foodApi';
 import Pagination from '../../components/pagination/Pagination';
 import type { FoodItem } from '../../lib/type/type';
@@ -11,13 +10,13 @@ import { errorMessage } from '../../lib/msg/errorMsg';
 import toast from 'react-hot-toast';
 import { FaEdit } from 'react-icons/fa';
 import EditForm from './EditFrom';
+import { useNavigate } from 'react-router-dom';
 
 export default function Food() {
     const [page, setPage] = useState<number>(1);
     const [per_page, setPerPage] = useState(10);
     const [search, setSearch] = useState<string>('');
 
-    const [openModal, setOpenModal] = useState(false);
     const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
 
     const { data: foodResponse, isLoading, isFetching, error } = useGetFoodsQuery({
@@ -107,6 +106,10 @@ export default function Food() {
 
 
 
+    const navigate = useNavigate();
+
+
+
 
 
 
@@ -125,7 +128,7 @@ export default function Food() {
 
                 <div className="flex gap-3">
                     <button
-                        onClick={() => setOpenModal(true)}
+                        onClick={()=>navigate("/admin-dashboard/food-upload")}
                         className="flex items-center gap-2 bg-[#207F36] cursor-pointer text-white px-5 py-3 rounded-2xl font-semibold hover:bg-[#1a6b2c] transition"
                     >
                         <FiPlus /> Add Food
@@ -271,20 +274,7 @@ export default function Food() {
                 </div>
             )}
 
-            {/* ADD FOOD MODAL */}
-            {openModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white w-[90%] max-w-2xl rounded-2xl p-6 relative h-[90vh] overflow-y-auto shadow-2xl">
-                        <button
-                            onClick={() => setOpenModal(false)}
-                            className="absolute top-4 cursor-pointer right-4 text-gray-500 hover:text-gray-800 transition"
-                        >
-                            <FiX size={22} />
-                        </button>
-                        <UploadFoodForm openModal={setOpenModal} />
-                    </div>
-                </div>
-            )}
+
 
             {/* DETACHED FOOD DETAILS VIEW MODAL ELEMENT */}
             <FoodDetailsModal

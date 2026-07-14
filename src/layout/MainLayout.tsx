@@ -28,6 +28,10 @@ export default function Layout() {
         return <Navigate to="/" replace />;
     }
 
+    const foodManagementActive =
+  isActive("/admin-dashboard/food-management") ||
+  isActive("/admin-dashboard/food-upload");
+
     return (
         <div className="min-h-screen flex bg-gradient-to-br from-[#0b7211] to-[#0a4f90]">
 
@@ -118,7 +122,7 @@ export default function Layout() {
                                 to="/admin-dashboard/food-management"
                                 className={`flex items-center rounded-lg py-3 transition
                                 ${sidebarOpen ? "px-4 gap-3" : "justify-center"}
-                                ${isActive("/admin-dashboard/food-management")
+                                ${foodManagementActive
                                         ? "bg-white activeColor"
                                         : "text-white hover:bg-white/10"
                                     }`}
