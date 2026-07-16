@@ -30,7 +30,6 @@ export default function Offer() {
 
     const { data, isLoading } = useAllOfferQuery({});
 
-    console.log("data", data?.data?.data);
 
 
     const offerData: Offer[] = data?.data?.data || [];
@@ -171,7 +170,6 @@ export default function Offer() {
         try {
             const res = await deleteOffer(deleteId).unwrap();
             if(res){
-                console.log(res)
                 setDeleteOfferPopUp(false);
                 return toast.success(res?.message)
             }

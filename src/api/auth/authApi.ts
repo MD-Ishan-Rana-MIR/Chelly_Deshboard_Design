@@ -47,6 +47,14 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Auth"],
     }),
+    resetPassword: builder.mutation({
+      query: (payload) => ({
+        url: `/reset-password-with-token`,
+        method: "POST",
+        body: payload
+      }),
+      invalidatesTags: ["Auth"]
+    })
   }),
 });
 
@@ -56,5 +64,6 @@ export const {
   useAdminProfileQuery,
   useEmailVerifyMutation,
   useOtpVerifyMutation,
-  useAdminProfileUpdateMutation
+  useAdminProfileUpdateMutation,
+  useResetPasswordMutation
 } = authApi;

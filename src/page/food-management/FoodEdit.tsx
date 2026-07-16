@@ -75,7 +75,6 @@ export default function FoodEdit() {
     const { data: foodResponse, isLoading: isFetching } = useGetFoodByIdQuery(id, { skip: !id });
     const foodData = foodResponse?.data;
 
-    // console.log("Food Update Page Data",foodData?.name);
 
     const [form, setForm] = useState<FormType>({
         name: '',
@@ -372,7 +371,6 @@ export default function FoodEdit() {
     };
 
 
-     console.log("form data food name ",form?.name);
 
 
     if (isFetching) {

@@ -39,7 +39,6 @@ const LoginPage = () => {
                     return; // Stop login process
                 }
 
-                console.log("Login successful:", res);
 
                 // ✅ Set token
                 localStorage.setItem("token", res?.data?.access_token);
@@ -49,7 +48,6 @@ const LoginPage = () => {
                 reset();
             }
         } catch (error) {
-            console.error("Login failed:", error);
             errorMessage(error);
         }
     };

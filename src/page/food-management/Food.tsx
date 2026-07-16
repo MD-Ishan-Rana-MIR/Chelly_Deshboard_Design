@@ -29,7 +29,6 @@ export default function Food() {
     const lastPage = foodResponse?.data?.last_page || 1;
     const totalItems = foodResponse?.data?.total || 0;
 
-    console.log("foodList",foodList);
 
 
 
@@ -88,7 +87,6 @@ export default function Food() {
                 return toast.success(res?.message)
             }
         } catch (error) {
-            console.error("Error deleting food item:", error);
             return errorMessage(error);
         }
     };
@@ -96,7 +94,6 @@ export default function Food() {
     const navigate = useNavigate();
 
     const handleEdit = (item: FoodItem) => {
-        console.log("From Food Item Page",item);
         navigate(`/admin-dashboard/food-edit/${item.id}`);
     }
 

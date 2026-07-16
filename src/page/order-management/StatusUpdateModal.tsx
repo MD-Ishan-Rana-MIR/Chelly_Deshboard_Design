@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ConfirmModal from '../../lib/alert/ConfirmModal';
 import { useOrderStatusUpdateMutation } from '../../api/order/orderApi';
+import { errorMessage } from '../../lib/msg/errorMsg';
 
 // Define the shape of the props the modal requires
 interface StatusUpdateModalProps {
@@ -35,7 +36,6 @@ const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
 
     // Phase 2: Triggered inside ConfirmModal when clicking confirm action
     const handleUpdateStatus = async () => {
-        console.log(`Updating Order ${updatingOrder.id} status to: ${newStatus}`);
         const payload = {
             status: newStatus
         }
@@ -43,13 +43,12 @@ const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
         setIsLoading(true);
         try {
             const res = await orderStatusUpdate({ id: updatingOrder?.id, payload: payload }).unwrap();
-            console.log(res)
             if (res) {
                 setOpenPopUpModal(false);
                 setUpdatingOrder(null);
             }
         } catch (error) {
-            console.error("Failed to update order status:", error);
+            return errorMessage(error)
         } finally {
             setIsLoading(false);
         }

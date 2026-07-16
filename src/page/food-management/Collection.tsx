@@ -3,6 +3,7 @@ import { FiPlus, FiX, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useCreateCollectionMutation, useDeleteCollectionMutation, useGetAllCollectionQuery, useUpdateCollectionMutation, } from '../../api/collection/collectionApi';
 import type { CollectionItem } from '../../lib/type/type';
 import toast from 'react-hot-toast';
+import { errorMessage } from '../../lib/msg/errorMsg';
 
 
 
@@ -75,7 +76,7 @@ const Collection = () => {
             handleCloseModal();
             refetch();
         } catch (error) {
-            console.error("Mutation failed:", error);
+            return errorMessage(error)
         }
     };
 
@@ -88,7 +89,7 @@ const Collection = () => {
             refetch();
             return toast.success(res?.message)
         } catch (error) {
-            console.error("Deletion failed:", error);
+            return errorMessage(error)
         }
     };
 

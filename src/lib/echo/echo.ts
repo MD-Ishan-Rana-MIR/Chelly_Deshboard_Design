@@ -24,12 +24,7 @@ const reverbAppKey =
   import.meta.env.VITE_REVERB_APP_KEY || "oskghldeokkdfjdslhnfd";
 const isTls = import.meta.env.VITE_REVERB_SCHEME === "https";
 
-// console.log("=== DEBUG 3: Final Echo Config ===", {
-//   reverbHost,
-//   reverbPort,
-//   isTls,
-//   authEndpoint,
-// });
+
 
 const echo = new Echo({
   broadcaster: "reverb",

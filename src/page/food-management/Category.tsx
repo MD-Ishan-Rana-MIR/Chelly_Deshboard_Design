@@ -118,7 +118,7 @@ export default function CategoryTable() {
                     return setOpenModal(false);
                 }
             } catch (error) {
-                console.log(error);
+                
                 return errorMessage(error);
             }
         }

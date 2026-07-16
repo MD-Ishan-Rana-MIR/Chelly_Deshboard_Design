@@ -20,7 +20,6 @@ export default function RefundModal({
   const [openPopUpModal, setopenPopUpModal] = useState(false);
   const [refundAmount, setRefundAmount] = useState("");
 
-  console.log("price",price)
 
   // RTK Query Mutation Hook
   const [refundPayment, { isLoading }] = useRefundPaymentMutation();

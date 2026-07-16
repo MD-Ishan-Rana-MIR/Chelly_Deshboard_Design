@@ -83,7 +83,6 @@ export default function PersonalInformation() {
                 formData.append("avatar", profile.avatar);
             }
 
-            console.log("FORM DATA READY");
 
             const response = await updateProfile(formData).unwrap();
             if (response) {

@@ -11,7 +11,6 @@ export const orderApi = baseApi.injectEndpoints({
         page = 1,
         perPage,
       }) => {
-        console.log("statusFilter", statusFilter);
         let url = "/admin/orders?";
         const params = [];
 

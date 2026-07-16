@@ -41,11 +41,9 @@ export default function NotificationManagementPage() {
         if (!userId) return;
 
         const channelName = `App.Models.User.${userId}`;
-        console.log(channelName);
 
         echo.private(channelName)
             .notification((notification: any) => {
-                console.log('Real-time Notification Received: ', notification);
 
                 if (notification.type === 'new_order') {
                     toast.success(notification.message || 'New private alert received', { icon: '🎉' });
@@ -77,7 +75,6 @@ export default function NotificationManagementPage() {
             await markSingleNotificationAsRead(notification.id).unwrap();
             toast.success('Notification marked as read');
         } catch (error) {
-            console.error("Failed handling single status updating context event:", error);
             errorMessage(error);
         }
     };
@@ -101,7 +98,6 @@ export default function NotificationManagementPage() {
             await deleteNotification(id).unwrap();
             toast.success('Notification deleted successfully', { id: toastId });
         } catch (error) {
-            console.error("Failed deleting notification:", error);
             toast.error('Failed to delete notification', { id: toastId });
             errorMessage(error);
         }
@@ -177,7 +173,6 @@ export default function NotificationManagementPage() {
                             {notificationsList.map((notification) => {
                                 const styles = getNotificationBadgeStyle(notification.data.type);
 
-                                // console.log("styles",styles,notification?.data?.type)
                                 const isUnread = !notification.read_at;
 
                                 return (

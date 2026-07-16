@@ -38,13 +38,12 @@ export default function UserManagementPage() {
     const { data, isFetching } = useAllUserQuery(undefined);
     const users: UserType[] = data?.data?.data || [];
 
-    const meta = {
-        current_page: data?.meta?.current_page || 1,
-        last_page: data?.meta?.last_page || 1,
-        total: data?.meta?.total || 0
-    };
+    // const meta = {
+    //     current_page: data?.meta?.current_page || 1,
+    //     last_page: data?.meta?.last_page || 1,
+    //     total: data?.meta?.total || 0
+    // };
 
-    console.log("=== DEBUG 1: Users Data ===", meta);
 
     // FILTER USERS
     const filteredUsers = useMemo(() => {
