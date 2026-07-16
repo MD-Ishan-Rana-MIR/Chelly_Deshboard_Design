@@ -12,6 +12,7 @@ type Offer = {
     id: number;
     title: string;
     status: string;
+    link: string | null;
     created_at: string;
     updated_at: string
 };
@@ -21,6 +22,7 @@ export default function Offer() {
     // OFFERS STATE
     const [offers, setOffers] = useState<Offer[]>([]);
     const [title, settitle] = useState<string>("")
+    const [link, setLink] = useState<string>("");
 
 
     // ==========================================All Offer Api==========================================
@@ -52,6 +54,7 @@ export default function Offer() {
     const offerModalClose = () => {
         setOpenModal(false);
         settitle("");
+        setLink("");
     }
 
     const [editId, setEditId] = useState(Number);
@@ -62,6 +65,7 @@ export default function Offer() {
     // =========================================== Offer Edit Related Function =======================================
     const handleEdit = (offer: Offer) => {
         settitle(offer.title);
+        setLink(offer.link || "");
         setOpenModal(true);
         setEditId(offer?.id)
     }
@@ -74,6 +78,7 @@ export default function Offer() {
     const handleOfferClose = () => {
         setOfferPopUp(false);
         settitle("");
+        setLink("");
     }
 
 
@@ -92,6 +97,7 @@ export default function Offer() {
     const handleSubmit = async () => {
         const payload = {
             title: title,
+            link: link || null,
             status: "active"
         }
         if (editId) {
@@ -100,6 +106,7 @@ export default function Offer() {
                 if (res) {
                     toast.success(res?.message);
                     settitle("");
+                    setLink("");
                     setOpenModal(false)
                     return setOfferPopUp(false);
                 }
@@ -110,12 +117,14 @@ export default function Offer() {
         } else {
             const payload = {
                 title: title,
+                link: link || null,
                 status: "active"
             }
             try {
                 const res = await postOffer(payload).unwrap();
                 if (res) {
                     settitle("");
+                    setLink("");
                     setOpenModal(false);
                     return setOfferPopUp(false);
                 }
@@ -301,13 +310,25 @@ export default function Offer() {
 
                         {/* EDITOR */}
                         <div className="mb-5 overflow-hidden rounded-xl border">
-
                             <Editor
                                 value={title}
                                 onTextChange={(e) => settitle(e.htmlValue || "")}
                                 style={{ height: "220px" }}
                             />
+                        </div>
 
+                        {/* LINK INPUT */}
+                        <div className="mb-5">
+                            <label className="mb-2 block text-sm font-semibold text-gray-700">
+                                Link (Optional)
+                            </label>
+                            <input
+                                type="url"
+                                value={link}
+                                onChange={(e) => setLink(e.target.value)}
+                                placeholder="https://example.com/product"
+                                className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-[#207F36] focus:ring-1 focus:ring-[#207F36]"
+                            />
                         </div>
 
                         {/* SAVE BUTTON */}
