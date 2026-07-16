@@ -117,7 +117,7 @@ export default function FoodEdit() {
 
             // Reconstruct Options
             if (foodData.options && Array.isArray(foodData.options)) {
-                const loadedOptions = foodData.options.map((opt: any, index: number) => {
+                const rawOptions = foodData.options.map((opt: any, index: number) => {
                     return {
                         id: `opt_${Date.now()}_${index}`,
                         name: opt.name || '',
@@ -126,12 +126,18 @@ export default function FoodEdit() {
                             : [{ id: `val_${Date.now()}_${index}_0`, val: '' }]
                     };
                 });
+                
+                // Hide Shopify's default dummy option
+                const loadedOptions = rawOptions.filter((opt: any) => 
+                    !(opt.name === 'Title' && opt.values.length === 1 && opt.values[0].val === 'Default Title')
+                );
+                
                 setOptions(loadedOptions);
             }
 
             // Reconstruct Variants
             if (foodData.variants && Array.isArray(foodData.variants)) {
-                const loadedVariants = foodData.variants.map((v: any) => ({
+                const rawVariants = foodData.variants.map((v: any) => ({
                     id: String(v.id || Date.now() + Math.random()),
                     title: v.title || '',
                     price: String(v.price || ''),
@@ -140,6 +146,10 @@ export default function FoodEdit() {
                     option2: v.option2 || null,
                     option3: v.option3 || null,
                 }));
+                
+                // Hide Shopify's default dummy variant
+                const loadedVariants = rawVariants.filter((v: any) => v.title !== 'Default Title');
+                
                 setVariants(loadedVariants);
             }
         }
