@@ -205,7 +205,7 @@ export default function FoodEdit() {
         setForm(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleDescriptionChange = (content: string, delta: any, source: string) => {
+    const handleDescriptionChange = (content: string, _delta: any, source: string) => {
         if (source === 'user') {
             setForm(prev => ({ ...prev, description: content }));
         }
