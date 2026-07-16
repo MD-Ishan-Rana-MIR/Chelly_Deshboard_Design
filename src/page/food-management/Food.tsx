@@ -96,6 +96,7 @@ export default function Food() {
     const navigate = useNavigate();
 
     const handleEdit = (item: FoodItem) => {
+        console.log("From Food Item Page",item);
         navigate(`/admin-dashboard/food-edit/${item.id}`);
     }
 

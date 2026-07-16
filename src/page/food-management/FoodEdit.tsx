@@ -75,6 +75,8 @@ export default function FoodEdit() {
     const { data: foodResponse, isLoading: isFetching } = useGetFoodByIdQuery(id, { skip: !id });
     const foodData = foodResponse?.data;
 
+    // console.log("Food Update Page Data",foodData?.name);
+
     const [form, setForm] = useState<FormType>({
         name: '',
         category: '',
@@ -86,6 +88,8 @@ export default function FoodEdit() {
         newGalleryImages: [],
         collections: [],
     });
+
+   
 
     const [existingMainImage, setExistingMainImage] = useState<string | null>(null);
     const [existingGalleryImages, setExistingGalleryImages] = useState<ExistingGalleryImage[]>([]);
@@ -100,7 +104,7 @@ export default function FoodEdit() {
     useEffect(() => {
         if (foodData) {
             setForm({
-                name: foodData.name || foodData.title || '',
+                name: foodData?.name || '',
                 category: String(foodData.category_id || ''),
                 price: foodData.price !== undefined && foodData.price !== null ? String(foodData.price) : '',
                 stock: foodData.stock !== undefined && foodData.stock !== null ? String(foodData.stock) : '',
@@ -366,6 +370,10 @@ export default function FoodEdit() {
             errorMessage(error);
         }
     };
+
+
+     console.log("form data food name ",form?.name);
+
 
     if (isFetching) {
         return (
