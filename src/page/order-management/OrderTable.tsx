@@ -120,7 +120,10 @@ export default function OrderManagementPage() {
     setOpenViewDetails(true);
   };
 
-  const handleOpenRefundModal = (id: number) => {
+  const [price,setPrice] = useState<string|null>(null)
+
+  const handleOpenRefundModal = (id: number,price:string) => {
+    setPrice(price)
     setSelectedRefundId(id);
     setOpenRefundModal(true);
   };
@@ -278,7 +281,7 @@ export default function OrderManagementPage() {
                         </button>
                         {order?.payment_status !== "refunded" ? (
                           <button
-                            onClick={() => handleOpenRefundModal(order.id)}
+                            onClick={() => handleOpenRefundModal(order.id,order?.total_amount)}
                             className="rounded-xl cursor-pointer bg-[#207F36] text-white hover:bg-[#1a6b2c] px-3 py-2 text-sm"
                           >
                             Refund
@@ -338,6 +341,7 @@ export default function OrderManagementPage() {
           orderId={selectedRefundId}
           isOpen={openRefundModal}
           onClose={() => setOpenRefundModal(false)}
+          price = {price}
         />
       )}
     </div>
