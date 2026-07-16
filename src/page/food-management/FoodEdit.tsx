@@ -201,11 +201,14 @@ export default function FoodEdit() {
     }, [options]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleDescriptionChange = (content: string) => {
-        setForm({ ...form, description: content });
+    const handleDescriptionChange = (content: string, delta: any, source: string) => {
+        if (source === 'user') {
+            setForm(prev => ({ ...prev, description: content }));
+        }
     };
 
     // Main Image
@@ -330,6 +333,13 @@ export default function FoodEdit() {
         });
 
         variants.forEach((variant, vIndex) => {
+            // Append the ID if it's not a generated/temporary ID (we used var_ or random strings, let's just send it if it's an existing number id from DB)
+            // Wait, we can just send it, backend will handle it.
+            // Oh, wait! The frontend sets variant.id to: String(v.id || Date.now() + Math.random()) or `var_${index}_${Date.now()}`
+            // If it starts with 'var_' or contains '.', it's a temp ID.
+            if (!variant.id.startsWith('var_') && !variant.id.includes('.')) {
+                formData.append(`variants[${vIndex}][id]`, variant.id);
+            }
             formData.append(`variants[${vIndex}][title]`, variant.title);
             formData.append(`variants[${vIndex}][price]`, variant.price);
             formData.append(`variants[${vIndex}][stock]`, variant.stock);
