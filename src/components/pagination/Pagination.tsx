@@ -18,7 +18,7 @@ export default function Pagination({
     isFetching = false,
     onPageChange,
     onPerPageChange,
-    perPageOptions = [5, 10, 20, 50],
+    perPageOptions = [30, 40, 50, 60],
 }: PaginationProps) {
 
 
