@@ -69,7 +69,7 @@ export const foodApi = baseApi.injectEndpoints({
     foodUpdate: builder.mutation({
       query: ({ id, formData }) => ({
         url: `/foods/${id}`,
-        method: "PUT",
+        method: "POST", // Needs to be POST because PHP doesn't parse multipart/form-data on PUT. Form uses _method: PUT.
         body: formData,
       }),
       invalidatesTags: ["Food"],
