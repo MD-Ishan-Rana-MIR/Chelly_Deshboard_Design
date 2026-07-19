@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface OrderItem {
     id: number;
@@ -13,14 +13,22 @@ interface OrderUser {
     email: string;
 }
 
+interface OrderEbtDetail {
+    card_number: string;
+    pin: string;
+    meal_plan: string;
+}
+
 interface OrderData {
     order_number: string;
     total_amount: string | number;
     payment_status: string;
+    payment_method?: string;
     status: string;
-    created_at: string; // ✅ Order Date এর জন্য নতুন প্রোপার্টি
+    created_at: string;
     user?: OrderUser;
     items?: OrderItem[];
+    ebt_details?: OrderEbtDetail;
 }
 
 interface OrderDetailsModalProps {
@@ -32,10 +40,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
     selectedOrder,
     setSelectedOrder,
 }) => {
-    // অর্ডার না থাকলে মোডাল রেন্ডার হবে না
+    const [isEbtRevealed, setIsEbtRevealed] = useState(false);
+
+   
     if (!selectedOrder) return null;
 
-    // ✅ ক্লায়েন্ট-সাইডে সুন্দর লেআউটে PDF ডাউনলোড/প্রিন্ট করার ফাংশন
     const handleDownloadPDF = () => {
         if (!selectedOrder) return;
 
@@ -47,7 +56,6 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
         const printWindow = window.open('', '_blank');
         if (!printWindow) return;
 
-        // প্রিন্ট/PDF এর জন্য একটি প্রফেশনাল ক্লিন এইচটিএমএল স্ট্রাকচার
         printWindow.document.write(`
             <html>
             <head>
@@ -129,7 +137,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                 <div className="space-y-3 text-sm border-t border-b border-gray-100 py-4">
                     <p className="text-gray-700"><b>Order No:</b> <span className="text-gray-900 font-mono font-medium">{selectedOrder.order_number}</span></p>
 
-                    {/* ✅ Order Date লেআউট */}
+                    {/* Order Date */}
                     <p className="text-gray-700"><b>Order Date:</b> <span className="text-gray-900">
                         {new Date(selectedOrder.created_at).toLocaleString([], {
                             dateStyle: 'medium',
@@ -143,10 +151,31 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                     <p className="text-gray-700"><b>Quantity:</b> <span className="text-gray-900">{selectedOrder.items?.[0]?.quantity || 1}</span></p>
                     <p className="text-gray-700"><b>Total Amount:</b> <span className="text-gray-900 font-bold">${selectedOrder.total_amount}</span></p>
                     <p className="text-gray-700"><b>Payment Status:</b> <span className="capitalize text-emerald-600 font-semibold">{selectedOrder.payment_status}</span></p>
+                    <p className="text-gray-700"><b>Payment Method:</b> <span className="capitalize text-gray-900 font-semibold">{selectedOrder.payment_method || 'N/A'}</span></p>
                     <p className="text-gray-700"><b>Order Status:</b> <span className="capitalize text-gray-900">{selectedOrder.status}</span></p>
+
+                    {selectedOrder.payment_method === 'ebt' && selectedOrder.ebt_details && (
+                        <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                            <div className="flex justify-between items-center mb-2">
+                                <h3 className="font-bold text-gray-900">EBT Payment Details</h3>
+                                <button
+                                    onClick={() => setIsEbtRevealed(!isEbtRevealed)}
+                                    className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 px-2 py-1 rounded"
+                                >
+                                    {isEbtRevealed ? 'Hide' : 'Reveal'}
+                                </button>
+                            </div>
+                            <p className="text-gray-700 mt-1"><b>Meal Plan:</b> <span className="text-gray-900">{selectedOrder.ebt_details.meal_plan}</span></p>
+                            <p className="text-gray-700"><b>Card Number:</b> <span className="text-gray-900 font-mono">
+                                {isEbtRevealed ? selectedOrder.ebt_details.card_number : `**** **** **** ${selectedOrder.ebt_details.card_number.slice(-4)}`}
+                            </span></p>
+                            <p className="text-gray-700"><b>PIN:</b> <span className="text-gray-900 font-mono">
+                                {isEbtRevealed ? selectedOrder.ebt_details.pin : '****'}
+                            </span></p>
+                        </div>
+                    )}
                 </div>
 
-                {/* ✅ দুটি অ্যাকশন বাটন পাশাপাশি সাজানো হলো */}
                 <div className="mt-5 flex gap-3">
                     <button
                         type="button"
