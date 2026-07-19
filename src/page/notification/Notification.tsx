@@ -107,7 +107,7 @@ export default function NotificationManagementPage() {
 
   const openDeleteModal = (e: React.MouseEvent, id: number | string) => {
     e.preventDefault();
-    e.stopPropagation(); // Avoid triggering list item container clicks
+    e.stopPropagation(); 
     setSelectedId(id);
     setDeletePopUp(true);
   };
