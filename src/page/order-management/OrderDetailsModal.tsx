@@ -162,11 +162,19 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                             <div className="space-y-2">
                                 <div>
                                     <p className="text-xs text-gray-400">Name</p>
-                                    <p className="text-sm font-medium text-gray-900 truncate">{selectedOrder.user?.name || 'N/A'}</p>
+                                    <p className="text-sm font-medium text-gray-900 truncate">{(selectedOrder as any).full_name || selectedOrder.user?.name || 'N/A'}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400">Email</p>
-                                    <p className="text-sm font-medium text-gray-900 truncate" title={selectedOrder.user?.email || 'N/A'}>{selectedOrder.user?.email || 'N/A'}</p>
+                                    <p className="text-sm font-medium text-gray-900 truncate" title={(selectedOrder as any).email || selectedOrder.user?.email || 'N/A'}>{(selectedOrder as any).email || selectedOrder.user?.email || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-400">Phone</p>
+                                    <p className="text-sm font-medium text-gray-900 truncate">{(selectedOrder as any).phone || selectedOrder.user?.phone || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-400">Address</p>
+                                    <p className="text-sm font-medium text-gray-900 line-clamp-2">{(selectedOrder as any).address || selectedOrder.user?.address || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>
