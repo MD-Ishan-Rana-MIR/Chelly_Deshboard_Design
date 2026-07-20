@@ -25,6 +25,6 @@ export const baseApi = createApi({
     },
   }),
 
-  tagTypes: ["Auth", "Banner", "Offer", "Category", "User", "Blog","Setting","Order","Food","Notification","Collection"],
+  tagTypes: ["Auth", "Banner", "Offer", "Category", "User", "Blog","Setting","Order","Food","Notification","Collection", "EbtPackage"],
   endpoints: () => ({}),
 });
