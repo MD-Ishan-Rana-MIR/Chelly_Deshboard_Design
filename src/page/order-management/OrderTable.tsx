@@ -238,7 +238,14 @@ export default function OrderManagementPage() {
                   ordersList.map((order: Order) => (
                     <tr key={order.id} className="border-b hover:bg-gray-50/50">
                       <td className="px-6 py-5 font-semibold">
-                        {order.order_number}
+                        <div className="flex items-center gap-2">
+                          {order.order_number}
+                          {(order as any).ebt_details && (
+                            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                              EBT
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-5">{order.user?.name || "N/A"}</td>
                       <td className="px-6 py-5">
