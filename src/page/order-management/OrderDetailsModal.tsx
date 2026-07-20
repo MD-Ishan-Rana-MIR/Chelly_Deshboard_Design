@@ -258,34 +258,37 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                     </div>
 
                     {/* EBT Payment Details Box */}
-                    {selectedOrder.payment_method === 'ebt' && selectedOrder.ebt_details && (
-                        <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4">
-                            <div className="flex justify-between items-center mb-3 border-b border-blue-100/50 pb-2">
-                                <h3 className="font-bold text-blue-900 text-sm flex items-center gap-2">
-                                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                    EBT Payment Details
-                                </h3>
-                                {['completed', 'cancelled'].includes(selectedOrder.status.toLowerCase()) ? null : (
-                                    <button
-                                        onClick={() => setIsEbtRevealed(!isEbtRevealed)}
-                                        className="text-[10px] uppercase tracking-wider font-bold bg-white hover:bg-gray-50 text-blue-700 border border-blue-200 px-2 py-1 rounded transition-colors"
-                                    >
-                                        {isEbtRevealed ? 'Hide Data' : 'Reveal'}
-                                    </button>
-                                )}
-                            </div>
-                            
-                            {['completed', 'cancelled'].includes(selectedOrder.status.toLowerCase()) ? (
-                                <div className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200">
-                                    <p className="flex items-start gap-2">
-                                        <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                        <span>For security, EBT details are hidden for {selectedOrder.status.toLowerCase()} orders.</span>
-                                    </p>
-                                    <p className="mt-2 font-mono text-xs bg-white/60 p-2 rounded border border-amber-100 inline-block">
-                                        Card: **** **** **** {selectedOrder.ebt_details.card_number.slice(-4)}
-                                    </p>
+                    {selectedOrder.payment_method === 'ebt' && selectedOrder.ebt_details && (() => {
+                        const isSecured = ['completed', 'cancelled'].includes(selectedOrder.status.toLowerCase()) || 
+                                          (Date.now() - new Date(selectedOrder.created_at).getTime() > 7 * 24 * 60 * 60 * 1000);
+                        return (
+                            <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4">
+                                <div className="flex justify-between items-center mb-3 border-b border-blue-100/50 pb-2">
+                                    <h3 className="font-bold text-blue-900 text-sm flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                        EBT Payment Details
+                                    </h3>
+                                    {isSecured ? null : (
+                                        <button
+                                            onClick={() => setIsEbtRevealed(!isEbtRevealed)}
+                                            className="text-[10px] uppercase tracking-wider font-bold bg-white hover:bg-gray-50 text-blue-700 border border-blue-200 px-2 py-1 rounded transition-colors"
+                                        >
+                                            {isEbtRevealed ? 'Hide Data' : 'Reveal'}
+                                        </button>
+                                    )}
                                 </div>
-                            ) : (
+                                
+                                {isSecured ? (
+                                    <div className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                                        <p className="flex items-start gap-2">
+                                            <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                            <span>For security, EBT details are hidden for completed orders or after 7 days.</span>
+                                        </p>
+                                        <p className="mt-2 font-mono text-xs bg-white/60 p-2 rounded border border-amber-100 inline-block">
+                                            Card: **** **** **** {selectedOrder.ebt_details.card_number.slice(-4)}
+                                        </p>
+                                    </div>
+                                ) : (
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-gray-500">Meal Plan</span>
@@ -308,7 +311,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                 </div>
                             )}
                         </div>
-                    )}
+                        );
+                    })()}
                 </div>
 
                 <div className="mt-5 flex gap-3 pt-4 border-t border-gray-100">
