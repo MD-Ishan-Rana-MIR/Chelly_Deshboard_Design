@@ -130,65 +130,180 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 animate-fade-in">
-            <div className="w-[420px] rounded-2xl bg-white p-6 shadow-xl border border-gray-100">
+            <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-xl border border-gray-100">
 
                 <h2 className="text-xl font-bold mb-4 text-gray-900">Order Details</h2>
 
-                <div className="space-y-3 text-sm border-t border-b border-gray-100 py-4">
-                    <p className="text-gray-700"><b>Order No:</b> <span className="text-gray-900 font-mono font-medium">{selectedOrder.order_number}</span></p>
+                <div className="space-y-4">
+                    {/* Header Info */}
+                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 flex justify-between items-center">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Order Number</p>
+                            <p className="text-gray-900 font-mono font-bold text-lg">{selectedOrder.order_number}</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Date</p>
+                            <p className="text-gray-900 font-medium text-sm">
+                                {new Date(selectedOrder.created_at).toLocaleString([], {
+                                    dateStyle: 'medium',
+                                    timeStyle: 'short'
+                                })}
+                            </p>
+                        </div>
+                    </div>
 
-                    {/* Order Date */}
-                    <p className="text-gray-700"><b>Order Date:</b> <span className="text-gray-900">
-                        {new Date(selectedOrder.created_at).toLocaleString([], {
-                            dateStyle: 'medium',
-                            timeStyle: 'short'
-                        })}
-                    </span></p>
+                    {/* Main Content Grid */}
+                    <div className="grid grid-cols-2 gap-4">
+                        {/* Customer Info */}
+                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                            <h3 className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-3 flex items-center gap-1.5 border-b border-gray-50 pb-2">
+                                Customer Details
+                            </h3>
+                            <div className="space-y-2">
+                                <div>
+                                    <p className="text-xs text-gray-400">Name</p>
+                                    <p className="text-sm font-medium text-gray-900 truncate">{selectedOrder.user?.name || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-400">Email</p>
+                                    <p className="text-sm font-medium text-gray-900 truncate" title={selectedOrder.user?.email || 'N/A'}>{selectedOrder.user?.email || 'N/A'}</p>
+                                </div>
+                            </div>
+                        </div>
 
-                    <p className="text-gray-700"><b>Customer:</b> <span className="text-gray-900">{selectedOrder.user?.name || 'N/A'}</span></p>
-                    <p className="text-gray-700"><b>Email:</b> <span className="text-gray-900">{selectedOrder.user?.email || 'N/A'}</span></p>
-                    <p className="text-gray-700"><b>Food Item:</b> <span className="text-gray-900">{selectedOrder.items?.[0]?.food?.name || 'N/A'}</span></p>
-                    <p className="text-gray-700"><b>Quantity:</b> <span className="text-gray-900">{selectedOrder.items?.[0]?.quantity || 1}</span></p>
-                    <p className="text-gray-700"><b>Total Amount:</b> <span className="text-gray-900 font-bold">${selectedOrder.total_amount}</span></p>
-                    <p className="text-gray-700"><b>Payment Status:</b> <span className="capitalize text-emerald-600 font-semibold">{selectedOrder.payment_status}</span></p>
-                    <p className="text-gray-700"><b>Payment Method:</b> <span className="capitalize text-gray-900 font-semibold">{selectedOrder.payment_method || 'N/A'}</span></p>
-                    <p className="text-gray-700"><b>Order Status:</b> <span className="capitalize text-gray-900">{selectedOrder.status}</span></p>
+                        {/* Order Summary */}
+                        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                            <h3 className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-3 flex items-center gap-1.5 border-b border-gray-50 pb-2">
+                                Order Summary
+                            </h3>
+                            <div className="space-y-3">
+                                {/* Map over all items or show fallback */}
+                                {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                                    selectedOrder.items.map((item, idx) => {
+                                        let qty = item.quantity || 1;
+                                        let price = Number(item.food?.price || 0);
+                                        let itemTotal = 0;
+                                        let bundleText = '';
+                                        
+                                        // Same bundle calculation logic as frontend cart
+                                        let remainingQty = qty;
+                                        while (remainingQty >= 21 && (21 * price > 120)) {
+                                            itemTotal += 120;
+                                            remainingQty -= 21;
+                                            bundleText = ' (Includes 21-Meal Bundle)';
+                                        }
+                                        while (remainingQty >= 10 && (10 * price > 70)) {
+                                            itemTotal += 70;
+                                            remainingQty -= 10;
+                                            bundleText = bundleText ? bundleText : ' (Includes 10-Meal Bundle)';
+                                        }
+                                        itemTotal += remainingQty * price;
 
+                                        return (
+                                            <div key={idx} className="flex justify-between items-start gap-4">
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        {item.food?.name || 'Custom Order'}
+                                                        <span className="text-emerald-600 text-[10px] ml-1 uppercase font-bold">{bundleText}</span>
+                                                    </p>
+                                                    <p className="text-xs text-gray-400">Qty: {item.quantity || 1}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-sm font-bold text-gray-900">${itemTotal.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="flex justify-between items-start gap-4">
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {selectedOrder.ebt_details?.meal_plan || 'N/A'}
+                                            </p>
+                                            <p className="text-xs text-gray-400">Qty: 1</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex justify-between items-center pt-2 border-t border-gray-50">
+                                    <p className="text-xs font-semibold text-gray-600">Total</p>
+                                    <p className="text-sm font-bold text-[#207F36]">${selectedOrder.total_amount}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Status Overview */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white rounded-xl p-3 border border-gray-100 flex items-center justify-between">
+                            <span className="text-xs text-gray-500 font-semibold uppercase">Order Status</span>
+                            <span className="capitalize text-xs font-bold bg-gray-100 text-gray-700 px-2.5 py-1 rounded-md">
+                                {selectedOrder.status}
+                            </span>
+                        </div>
+                        <div className="bg-white rounded-xl p-3 border border-gray-100 flex items-center justify-between">
+                            <span className="text-xs text-gray-500 font-semibold uppercase">Payment</span>
+                            <span className="capitalize text-xs font-bold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md">
+                                {selectedOrder.payment_status}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* EBT Payment Details Box */}
                     {selectedOrder.payment_method === 'ebt' && selectedOrder.ebt_details && (
-                        <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                            <div className="flex justify-between items-center mb-2">
-                                <h3 className="font-bold text-gray-900">EBT Payment Details</h3>
+                        <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4">
+                            <div className="flex justify-between items-center mb-3 border-b border-blue-100/50 pb-2">
+                                <h3 className="font-bold text-blue-900 text-sm flex items-center gap-2">
+                                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                    EBT Payment Details
+                                </h3>
                                 {['completed', 'cancelled'].includes(selectedOrder.status.toLowerCase()) ? null : (
                                     <button
                                         onClick={() => setIsEbtRevealed(!isEbtRevealed)}
-                                        className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 px-2 py-1 rounded cursor-pointer"
+                                        className="text-[10px] uppercase tracking-wider font-bold bg-white hover:bg-gray-50 text-blue-700 border border-blue-200 px-2 py-1 rounded transition-colors"
                                     >
-                                        {isEbtRevealed ? 'Hide' : 'Reveal'}
+                                        {isEbtRevealed ? 'Hide Data' : 'Reveal'}
                                     </button>
                                 )}
                             </div>
                             
                             {['completed', 'cancelled'].includes(selectedOrder.status.toLowerCase()) ? (
-                                <div className="mt-2 text-sm text-amber-700 bg-amber-50 p-3 rounded border border-amber-200">
-                                    <p>For security reasons, EBT details and PIN are hidden for {selectedOrder.status.toLowerCase()} orders.</p>
-                                    <p className="mt-1 font-mono">Card: **** **** **** {selectedOrder.ebt_details.card_number.slice(-4)}</p>
+                                <div className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                                    <p className="flex items-start gap-2">
+                                        <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                        <span>For security, EBT details are hidden for {selectedOrder.status.toLowerCase()} orders.</span>
+                                    </p>
+                                    <p className="mt-2 font-mono text-xs bg-white/60 p-2 rounded border border-amber-100 inline-block">
+                                        Card: **** **** **** {selectedOrder.ebt_details.card_number.slice(-4)}
+                                    </p>
                                 </div>
                             ) : (
-                                <>
-                                    <p className="text-gray-700 mt-1"><b>Meal Plan:</b> <span className="text-gray-900">{selectedOrder.ebt_details.meal_plan}</span></p>
-                                    <p className="text-gray-700"><b>Card Number:</b> <span className="text-gray-900 font-mono">
-                                        {isEbtRevealed ? selectedOrder.ebt_details.card_number : `**** **** **** ${selectedOrder.ebt_details.card_number.slice(-4)}`}
-                                    </span></p>
-                                    <p className="text-gray-700"><b>PIN:</b> <span className="text-gray-900 font-mono">
-                                        {isEbtRevealed ? selectedOrder.ebt_details.pin : '****'}
-                                    </span></p>
-                                </>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500">Meal Plan</span>
+                                        <span className="font-medium text-gray-900">{selectedOrder.ebt_details.meal_plan}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500">Card Number</span>
+                                        <span className="font-mono text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-100">
+                                            {isEbtRevealed 
+                                                ? selectedOrder.ebt_details.card_number.replace(/(.{4})/g, '$1 ').trim() 
+                                                : `**** **** **** ${selectedOrder.ebt_details.card_number.slice(-4)}`}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500">PIN</span>
+                                        <span className="font-mono text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-100">
+                                            {isEbtRevealed ? selectedOrder.ebt_details.pin : '****'}
+                                        </span>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     )}
                 </div>
 
-                <div className="mt-5 flex gap-3">
+                <div className="mt-5 flex gap-3 pt-4 border-t border-gray-100">
                     <button
                         type="button"
                         onClick={() => setSelectedOrder(null)}

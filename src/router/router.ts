@@ -99,6 +99,10 @@ export const router = createBrowserRouter([
         element: React.createElement(PaymentGuidePage),
       },
       {
+        path: "ebt-packages",
+        element: React.createElement(React.lazy(() => import('../page/settings/EbtPackagesPage'))),
+      },
+      {
         path: "blog-management",
         element: React.createElement(BlogManagement),
       },

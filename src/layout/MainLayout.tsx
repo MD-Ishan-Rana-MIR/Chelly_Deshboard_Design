@@ -4,7 +4,7 @@ import Navbar from "../components/navbar/Navbar";
 import { MdDashboard, MdSettings } from "react-icons/md";
 import { IoChevronDown } from "react-icons/io5";
 import { FaBurger } from "react-icons/fa6";
-import { FaBlog, FaJediOrder, FaUser } from "react-icons/fa";
+import { FaBlog, FaJediOrder, FaUser, FaBoxOpen } from "react-icons/fa";
 
 
 export default function Layout() {
@@ -132,6 +132,25 @@ export default function Layout() {
                                 </span>
 
                                 {sidebarOpen && <span className=" font-semibold text-xl  " >Food Management</span>}
+                            </Link>
+                        </li>
+
+                        {/* EBT Packages */}
+                        <li>
+                            <Link
+                                to="/admin-dashboard/ebt-packages"
+                                className={`flex items-center rounded-lg py-3 transition
+                                ${sidebarOpen ? "px-4 gap-3" : "justify-center"}
+                                ${isActive("/admin-dashboard/ebt-packages")
+                                        ? "bg-white activeColor"
+                                        : "text-white hover:bg-white/10"
+                                    }`}
+                            >
+                                <span>
+                                    {isActive("/admin-dashboard/ebt-packages") ? <FaBoxOpen size={28} /> : <FaBoxOpen size={28} />}
+                                </span>
+
+                                {sidebarOpen && <span className=" font-semibold text-xl  " >EBT Packages</span>}
                             </Link>
                         </li>
 

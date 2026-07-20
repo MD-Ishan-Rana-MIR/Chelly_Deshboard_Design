@@ -5,6 +5,7 @@ import StatusUpdateModal from "./StatusUpdateModal";
 import OrderDetailsModal from "./OrderDetailsModal";
 import type { Order } from "../../lib/type/type";
 import RefaundModal from "./RefaundModal";
+import { Eye, Edit, Undo2 } from "lucide-react";
 
 export default function OrderManagementPage() {
   const [searchId, setSearchId] = useState("");
@@ -264,34 +265,36 @@ export default function OrderManagementPage() {
                         </span>
                       </td>
 
-                      <td className="px-6 py-5 text-right flex justify-end gap-2">
+                      <td className="px-6 py-5 text-right flex justify-end gap-2 items-center">
                         <button
-                          onClick={() => {
-                            openViewDetailsModal(order);
-                          }}
-                          className="rounded-xl cursor-pointer border border-[#207F36] hover:bg-gray-50 px-3 py-2 text-sm text-gray-700"
+                          onClick={() => openViewDetailsModal(order)}
+                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                          title="View Details"
                         >
-                          View
+                          <Eye className="w-5 h-5" />
                         </button>
                         <button
                           onClick={() => openUpdateModal(order)}
-                          className="rounded-xl cursor-pointer bg-[#207F36] text-white hover:bg-[#1a6b2c] px-3 py-2 text-sm"
+                          className="p-2 text-gray-400 hover:text-[#207F36] hover:bg-green-50 rounded-lg transition-colors cursor-pointer"
+                          title="Update Status"
                         >
-                          Update Status
+                          <Edit className="w-5 h-5" />
                         </button>
                         {order?.payment_status !== "refunded" ? (
                           <button
                             onClick={() => handleOpenRefundModal(order.id,order?.total_amount)}
-                            className="rounded-xl cursor-pointer bg-[#207F36] text-white hover:bg-[#1a6b2c] px-3 py-2 text-sm"
+                            className="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
+                            title="Refund"
                           >
-                            Refund
+                            <Undo2 className="w-5 h-5" />
                           </button>
                         ) : (
                           <button
                             disabled
-                            className="rounded-xl cursor-not-allowed bg-gray-500 text-white px-3 py-2 text-sm"
+                            className="p-2 text-gray-300 cursor-not-allowed"
+                            title="Already Refunded"
                           >
-                            Already Refunded
+                            <Undo2 className="w-5 h-5" />
                           </button>
                         )}
                       </td>
