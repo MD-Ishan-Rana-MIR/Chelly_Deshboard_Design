@@ -158,20 +158,32 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                         <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                             <div className="flex justify-between items-center mb-2">
                                 <h3 className="font-bold text-gray-900">EBT Payment Details</h3>
-                                <button
-                                    onClick={() => setIsEbtRevealed(!isEbtRevealed)}
-                                    className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 px-2 py-1 rounded"
-                                >
-                                    {isEbtRevealed ? 'Hide' : 'Reveal'}
-                                </button>
+                                {['completed', 'cancelled'].includes(selectedOrder.status.toLowerCase()) ? null : (
+                                    <button
+                                        onClick={() => setIsEbtRevealed(!isEbtRevealed)}
+                                        className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 px-2 py-1 rounded cursor-pointer"
+                                    >
+                                        {isEbtRevealed ? 'Hide' : 'Reveal'}
+                                    </button>
+                                )}
                             </div>
-                            <p className="text-gray-700 mt-1"><b>Meal Plan:</b> <span className="text-gray-900">{selectedOrder.ebt_details.meal_plan}</span></p>
-                            <p className="text-gray-700"><b>Card Number:</b> <span className="text-gray-900 font-mono">
-                                {isEbtRevealed ? selectedOrder.ebt_details.card_number : `**** **** **** ${selectedOrder.ebt_details.card_number.slice(-4)}`}
-                            </span></p>
-                            <p className="text-gray-700"><b>PIN:</b> <span className="text-gray-900 font-mono">
-                                {isEbtRevealed ? selectedOrder.ebt_details.pin : '****'}
-                            </span></p>
+                            
+                            {['completed', 'cancelled'].includes(selectedOrder.status.toLowerCase()) ? (
+                                <div className="mt-2 text-sm text-amber-700 bg-amber-50 p-3 rounded border border-amber-200">
+                                    <p>For security reasons, EBT details and PIN are hidden for {selectedOrder.status.toLowerCase()} orders.</p>
+                                    <p className="mt-1 font-mono">Card: **** **** **** {selectedOrder.ebt_details.card_number.slice(-4)}</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <p className="text-gray-700 mt-1"><b>Meal Plan:</b> <span className="text-gray-900">{selectedOrder.ebt_details.meal_plan}</span></p>
+                                    <p className="text-gray-700"><b>Card Number:</b> <span className="text-gray-900 font-mono">
+                                        {isEbtRevealed ? selectedOrder.ebt_details.card_number : `**** **** **** ${selectedOrder.ebt_details.card_number.slice(-4)}`}
+                                    </span></p>
+                                    <p className="text-gray-700"><b>PIN:</b> <span className="text-gray-900 font-mono">
+                                        {isEbtRevealed ? selectedOrder.ebt_details.pin : '****'}
+                                    </span></p>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>
