@@ -170,11 +170,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400">Phone</p>
-                                    <p className="text-sm font-medium text-gray-900 truncate">{(selectedOrder as any).phone || selectedOrder.user?.phone || 'N/A'}</p>
+                                    <p className="text-sm font-medium text-gray-900 truncate">{(selectedOrder as any).phone || (selectedOrder.user as any)?.phone || 'N/A'}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400">Address</p>
-                                    <p className="text-sm font-medium text-gray-900 line-clamp-2">{(selectedOrder as any).address || selectedOrder.user?.address || 'N/A'}</p>
+                                    <p className="text-sm font-medium text-gray-900 line-clamp-2">{(selectedOrder as any).address || (selectedOrder.user as any)?.address || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>
@@ -189,7 +189,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                 {selectedOrder.items && selectedOrder.items.length > 0 ? (
                                     selectedOrder.items.map((item, idx) => {
                                         let qty = item.quantity || 1;
-                                        let price = Number(item.food?.price || 0);
+                                        let price = Number((item.food as any)?.price || 0);
                                         let itemTotal = 0;
                                         let bundleText = '';
                                         
