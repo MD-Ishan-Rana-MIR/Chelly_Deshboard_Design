@@ -312,7 +312,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                             )}
                         </div>
                         );
-                    })}
+                    })()}
                 </div>
 
                 <div className="mt-5 flex gap-3 pt-4 border-t border-gray-100">
