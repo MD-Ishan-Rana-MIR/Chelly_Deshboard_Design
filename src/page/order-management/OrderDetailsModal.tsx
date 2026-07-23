@@ -5,6 +5,7 @@ interface OrderItem {
     food?: {
         name: string;
     };
+    variant?: any;
     quantity: number;
 }
 
@@ -110,7 +111,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                             <tr>
                                 <td>
                                     ${item.food?.name || 'Custom Order'}
-                                    ${item.variant ? '<br><small>(' + Object.entries(item.variant).filter(([k, v]) => v && !['id', 'food_id', 'created_at', 'updated_at', 'price', 'stock'].includes(k)).map(([k, v]) => v).join(' / ') + ')</small>' : ''}
+                                    ${item.variant?.options ? Object.entries(item.variant.options).map(([key, value]) => `<span><b>${key}:</b> ${value}</span>`).join(' | ') : ''}
                                 </td>
                                 <td>${item.quantity || 1}</td>
                                 <td><span class="badge badge-success">${selectedOrder.payment_status}</span></td>
@@ -194,7 +195,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                 {selectedOrder.items && selectedOrder.items.length > 0 ? (
                                     selectedOrder.items.map((item, idx) => {
                                         let qty = item.quantity || 1;
-                                        let price = Number((item.food as any)?.price || 0);
+                                        let price = Number(item.food?.price || 0);
                                         let itemTotal = 0;
                                         let bundleText = '';
                                         
@@ -219,7 +220,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                                         {item.food?.name || 'Custom Order'}
                                                         {item.variant && (
                                                             <span className="text-gray-500 text-xs ml-1 font-normal">
-                                                                ({Object.entries(item.variant).filter(([k, v]) => v && !['id', 'food_id', 'created_at', 'updated_at', 'price', 'stock'].includes(k)).map(([k, v]) => v).join(' / ') || 'Variant'})
+                                                                {item.variant?.options ? Object.entries(item.variant.options).map(([key, value]) => <span key={key} className="mr-2"><b>{key}:</b> {value as any}</span>) : ''}
                                                             </span>
                                                         )}
                                                         <span className="text-emerald-600 text-[10px] ml-1 uppercase font-bold">{bundleText}</span>

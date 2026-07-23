@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiSave } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { errorMessage } from "../../lib/msg/errorMsg";
