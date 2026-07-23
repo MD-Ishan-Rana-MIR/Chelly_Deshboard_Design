@@ -201,6 +201,7 @@ export default function Layout() {
                                 <ul className="ml-10 mt-2 space-y-1">
                                     {[
                                         { name: "Personal Info", path: "/admin-dashboard/settings/profile" },
+                                        { name: "Store Configuration", path: "/admin-dashboard/settings/store-configuration" },
                                         { name: "Contact Us", path: "/admin-dashboard/settings/contact" },
                                         { name: "Privacy Policy", path: "/admin-dashboard/settings/privacy" },
                                         { name: "Terms & Conditions", path: "/admin-dashboard/settings/terms" },
