@@ -19,6 +19,7 @@ const DAYS_OF_WEEK = [
 
 export default function StoreConfiguration() {
     const [selectedDays, setSelectedDays] = useState<string[]>([]);
+    const [lowStockThreshold, setLowStockThreshold] = useState<number>(5);
 
     // ===================== GET API =====================
     const { data, isLoading: isFetching } = useGetAllContactInformationQuery(undefined);
@@ -28,16 +29,21 @@ export default function StoreConfiguration() {
 
     // ===================== SET DEFAULT VALUE =====================
     useEffect(() => {
-        if (data?.data?.allowed_checkout_days) {
-            try {
-                const days = typeof data.data.allowed_checkout_days === 'string' 
-                    ? JSON.parse(data.data.allowed_checkout_days) 
-                    : data.data.allowed_checkout_days;
-                if (Array.isArray(days)) {
-                    setSelectedDays(days);
+        if (data?.data) {
+            if (data.data.allowed_checkout_days) {
+                try {
+                    const days = typeof data.data.allowed_checkout_days === 'string' 
+                        ? JSON.parse(data.data.allowed_checkout_days) 
+                        : data.data.allowed_checkout_days;
+                    if (Array.isArray(days)) {
+                        setSelectedDays(days);
+                    }
+                } catch (e) {
+                    console.error("Failed to parse allowed_checkout_days", e);
                 }
-            } catch (e) {
-                console.error("Failed to parse allowed_checkout_days", e);
+            }
+            if (data.data.low_stock_threshold) {
+                setLowStockThreshold(Number(data.data.low_stock_threshold));
             }
         }
     }, [data]);
@@ -55,7 +61,8 @@ export default function StoreConfiguration() {
     const handleSave = async () => {
         try {
             const payload = {
-                allowed_checkout_days: JSON.stringify(selectedDays)
+                allowed_checkout_days: JSON.stringify(selectedDays),
+                low_stock_threshold: lowStockThreshold
             };
             const res = await storeSetting(payload).unwrap();
             toast.success(res?.message || "Settings updated successfully");
@@ -108,6 +115,27 @@ export default function StoreConfiguration() {
                                 <span className="text-gray-700 font-medium">{day}</span>
                             </label>
                         ))}
+                    </div>
+                </div>
+
+                {/* LOW STOCK SETTINGS */}
+                <div className="space-y-5">
+                    <h2 className="text-lg font-bold text-gray-800 border-b pb-2">
+                        Inventory Management
+                    </h2>
+                    <p className="text-gray-600 text-sm mb-4">
+                        Set the minimum stock threshold. You will receive an alert when a food item's stock falls to this level or below.
+                    </p>
+
+                    <div className="flex flex-col md:w-1/2">
+                        <label className="text-gray-700 font-semibold mb-2">Low Stock Alert Threshold</label>
+                        <input 
+                            type="number"
+                            min="0"
+                            value={lowStockThreshold}
+                            onChange={(e) => setLowStockThreshold(Number(e.target.value))}
+                            className="border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#207F36]"
+                        />
                     </div>
                 </div>
 
