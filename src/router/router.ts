@@ -10,6 +10,7 @@ import UserManagementPage from "../page/user-management/UserManagementPage";
 import PersonalInformation from "./../page/settings/PersonalInformation";
 import ContactUs from "../page/settings/ContactUs";
 import FAQs from "./../page/settings/FAQs";
+import StoreConfiguration from "../page/settings/StoreConfiguration";
 import HomePage from "../page/home/HomePage";
 import OrderManagement from "../page/order-management/OrderManagement";
 import FoodManagement from "../page/food-management/FoodManagement";
@@ -73,6 +74,10 @@ export const router = createBrowserRouter([
       {
         path: "settings/profile",
         element: React.createElement(PersonalInformation),
+      },
+      {
+        path: "settings/store-configuration",
+        element: React.createElement(StoreConfiguration),
       },
       {
         path: "settings/contact",
