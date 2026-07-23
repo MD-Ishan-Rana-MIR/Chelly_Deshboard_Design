@@ -106,11 +106,16 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                             </tr>
                         </thead>
                         <tbody>
+                            ${selectedOrder.items?.map(item => `
                             <tr>
-                                <td>${selectedOrder.items?.[0]?.food?.name || 'N/A'}</td>
-                                <td>${selectedOrder.items?.[0]?.quantity || 1}</td>
+                                <td>
+                                    ${item.food?.name || 'Custom Order'}
+                                    ${item.variant ? '<br><small>(' + Object.entries(item.variant).filter(([k, v]) => v && !['id', 'food_id', 'created_at', 'updated_at', 'price', 'stock'].includes(k)).map(([k, v]) => v).join(' / ') + ')</small>' : ''}
+                                </td>
+                                <td>${item.quantity || 1}</td>
                                 <td><span class="badge badge-success">${selectedOrder.payment_status}</span></td>
                             </tr>
+                            `).join('')}
                         </tbody>
                     </table>
 
@@ -212,6 +217,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                                 <div className="flex-1">
                                                     <p className="text-sm font-medium text-gray-900">
                                                         {item.food?.name || 'Custom Order'}
+                                                        {item.variant && (
+                                                            <span className="text-gray-500 text-xs ml-1 font-normal">
+                                                                ({Object.entries(item.variant).filter(([k, v]) => v && !['id', 'food_id', 'created_at', 'updated_at', 'price', 'stock'].includes(k)).map(([k, v]) => v).join(' / ') || 'Variant'})
+                                                            </span>
+                                                        )}
                                                         <span className="text-emerald-600 text-[10px] ml-1 uppercase font-bold">{bundleText}</span>
                                                     </p>
                                                     <p className="text-xs text-gray-400">Qty: {item.quantity || 1}</p>
