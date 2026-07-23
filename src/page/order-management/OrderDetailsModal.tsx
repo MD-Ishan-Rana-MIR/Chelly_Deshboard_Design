@@ -4,6 +4,7 @@ interface OrderItem {
     id: number;
     food?: {
         name: string;
+        price?: number | string;
     };
     variant?: any;
     quantity: number;
