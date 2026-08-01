@@ -246,6 +246,14 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                 )}
 
                                 <div className="flex justify-between items-center pt-2 border-t border-gray-50">
+                                    <p className="text-xs font-semibold text-gray-600">Subtotal</p>
+                                    <p className="text-sm font-bold text-gray-900">${(Number(selectedOrder.total_amount) - Number(selectedOrder.shipping_fee || 0)).toFixed(2)}</p>
+                                </div>
+                                <div className="flex justify-between items-center pt-1 border-gray-50">
+                                    <p className="text-xs font-semibold text-gray-600">Shipping Fee</p>
+                                    <p className="text-sm font-bold text-gray-900">${Number(selectedOrder.shipping_fee || 0).toFixed(2)}</p>
+                                </div>
+                                <div className="flex justify-between items-center pt-2 border-t border-gray-50">
                                     <p className="text-xs font-semibold text-gray-600">Total</p>
                                     <p className="text-sm font-bold text-[#207F36]">${selectedOrder.total_amount}</p>
                                 </div>
