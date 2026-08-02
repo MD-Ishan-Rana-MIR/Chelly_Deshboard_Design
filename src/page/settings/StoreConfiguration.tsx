@@ -20,6 +20,8 @@ const DAYS_OF_WEEK = [
 export default function StoreConfiguration() {
     const [selectedDays, setSelectedDays] = useState<string[]>([]);
     const [lowStockThreshold, setLowStockThreshold] = useState<number>(5);
+    const [originAddress, setOriginAddress] = useState<string>("");
+    const [flatShippingRate, setFlatShippingRate] = useState<number>(30);
 
     // ===================== GET API =====================
     const { data, isLoading: isFetching } = useGetAllContactInformationQuery(undefined);
@@ -45,6 +47,12 @@ export default function StoreConfiguration() {
             if (data.data.low_stock_threshold) {
                 setLowStockThreshold(Number(data.data.low_stock_threshold));
             }
+            if (data.data.origin_address) {
+                setOriginAddress(data.data.origin_address);
+            }
+            if (data.data.flat_shipping_rate) {
+                setFlatShippingRate(Number(data.data.flat_shipping_rate));
+            }
         }
     }, [data]);
 
@@ -62,7 +70,9 @@ export default function StoreConfiguration() {
         try {
             const payload = {
                 allowed_checkout_days: JSON.stringify(selectedDays),
-                low_stock_threshold: lowStockThreshold
+                low_stock_threshold: lowStockThreshold,
+                origin_address: originAddress,
+                flat_shipping_rate: flatShippingRate
             };
             const res = await storeSetting(payload).unwrap();
             toast.success(res?.message || "Settings updated successfully");
@@ -136,6 +146,39 @@ export default function StoreConfiguration() {
                             onChange={(e) => setLowStockThreshold(Number(e.target.value))}
                             className="border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#207F36]"
                         />
+                    </div>
+                </div>
+
+                {/* SHIPPING SETTINGS */}
+                <div className="space-y-5">
+                    <h2 className="text-lg font-bold text-gray-800 border-b pb-2">
+                        Distance-based Shipping
+                    </h2>
+                    <p className="text-gray-600 text-sm mb-4">
+                        Configure the store's origin address for distance calculations and the flat fee for deliveries beyond 25 miles.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex flex-col">
+                            <label className="text-gray-700 font-semibold mb-2">Store Origin Address</label>
+                            <input 
+                                type="text"
+                                placeholder="e.g. 123 Main St, New York, NY 10001"
+                                value={originAddress}
+                                onChange={(e) => setOriginAddress(e.target.value)}
+                                className="border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#207F36]"
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="text-gray-700 font-semibold mb-2">Flat Shipping Rate ($)</label>
+                            <input 
+                                type="number"
+                                min="0"
+                                value={flatShippingRate}
+                                onChange={(e) => setFlatShippingRate(Number(e.target.value))}
+                                className="border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#207F36]"
+                            />
+                        </div>
                     </div>
                 </div>
 
