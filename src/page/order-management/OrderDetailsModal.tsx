@@ -24,6 +24,7 @@ interface OrderEbtDetail {
 interface OrderData {
     order_number: string;
     total_amount: string | number;
+    shipping_fee?: string | number;
     payment_status: string;
     payment_method?: string;
     status: string;
